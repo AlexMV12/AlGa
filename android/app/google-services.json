@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "529240936234",
+    "firebase_url": "https://dima-project-alga.firebaseio.com",
+    "project_id": "dima-project-alga",
+    "storage_bucket": "dima-project-alga.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529240936234:android:64dc3145a78adb58c29853",
+        "android_client_info": {
+          "package_name": "com.dima.alga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "529240936234-6kirk09f1ku5ifp9lvkn24coem90jjft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dima.alga",
+            "certificate_hash": "0fda91d2fbce5de9804cc1f1976ee5b2493965b1"
+          }
+        },
+        {
+          "client_id": "529240936234-5jnlbgs150938vdtpb956d74r3l5uh9g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7KKzM80DNfBq7sAuARmyjqx6GOw_lEVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "529240936234-5jnlbgs150938vdtpb956d74r3l5uh9g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
