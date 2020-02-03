@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:AlGa/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:AlGa/gmaps.dart';
 import 'package:AlGa/profile_page.dart';
-import 'package:provider/provider.dart';
+
+import 'signin_page.dart';
+
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,7 +24,10 @@ class _HomePageState extends State<HomePage> {
           actions: <Widget>[
             FlatButton(
               onPressed: () {
-                Provider.of<AuthService>(context).logout();
+                _auth.signOut();
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => SignInPage()),
+                );
               },
               child: Text(
                 "LOGOUT",
