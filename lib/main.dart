@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/auth_service.dart';
-import 'package:flutter_app/loginPage.dart';
-import 'package:flutter_app/home_page.dart';
+import 'package:AlGa/auth_service.dart';
+import 'package:AlGa/loginPage.dart';
+import 'package:AlGa/home_page.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(

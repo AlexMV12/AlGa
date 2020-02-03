@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/auth_service.dart';
-import 'package:flutter_app/gmaps.dart';
-import 'package:flutter_app/profile_page.dart';
+import 'package:AlGa/auth_service.dart';
+import 'package:AlGa/gmaps.dart';
+import 'package:AlGa/profile_page.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
