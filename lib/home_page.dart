@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/auth_service.dart';
 import 'package:flutter_app/gmaps.dart';
 import 'package:flutter_app/profile_page.dart';
+import 'package:flutter_app/stats.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           physics: new NeverScrollableScrollPhysics(),
           children: <Widget>[
-            Icon(Icons.alarm),
+            GeolocationExample(),
             Gmaps(),
             Profile()
           ],
