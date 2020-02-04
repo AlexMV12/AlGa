@@ -4,12 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final StorageReference storageReference = FirebaseStorage().ref().child(
-    'gs://dima-project-alga.appspot.com/users_profilepics' + '/'
-);
 
-
-var _profileImageUrl;// = 'https://s14-eu5.startpage.com/cgi-bin/serveimage?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FXjkMMkfUQWA%2Fhqdefault.jpg&sp=3b1d4d4cbe35fbd0f12087a53ee33fbe&anticache=339340';
+var _profileImageUrl;
 var _name = "novalue";
 var _car = "novalue";
 
@@ -24,8 +20,9 @@ Future <bool> getData() async {
         _name = ds["name"];
         _car = ds["car"];
   });
+
   var storage = FirebaseStorage.instance.ref().child(
-      "users_profilepics/hx0i0SjHA1YFSFv2RODMiekSrae2"
+      "users_profilepics/" + userUid
   );
 
   _profileImageUrl = await storage.getDownloadURL();
