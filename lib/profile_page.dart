@@ -24,59 +24,56 @@ Future <bool> getData() async {
         _name = ds["name"];
         _car = ds["car"];
   });
-  print("hello");
   var storage = FirebaseStorage.instance.ref().child(
       "users_profilepics/hx0i0SjHA1YFSFv2RODMiekSrae2"
   );
 
   _profileImageUrl = await storage.getDownloadURL();
-  print("hello2");
-//  return Future.delayed((Duration(seconds: 2)), () => true);
+  return true;
 }
-    
 
 class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 30,
-          ),
-          FutureBuilder<bool>(
-            future: getData(),
-            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-              if (!snapshot.hasData) {
-              // while data is loading:
-              return Center(
-              child: CircularProgressIndicator(),
-              );
-              } else {
-              return CircleAvatar(
-                  radius: 80,
-                  backgroundImage: NetworkImage(
-                    _profileImageUrl,
+    return FutureBuilder<bool>(
+      future: getData(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (!snapshot.hasData) {
+          // while data is loading:
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+        return Container(
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 30,
+              ),
+              CircleAvatar(
+                          radius: 80,
+                          backgroundImage: NetworkImage(
+                            _profileImageUrl,
+                          )
+                      ),
+              Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text(
+                    _name,
+                    style: TextStyle(fontSize: 22),
                   )
-              );
-            }
-              }),
-          Padding(
-            padding: EdgeInsets.all(20.0),
-              child: Text(
-                _name,
-                style: TextStyle(fontSize: 22),
-              )
+              ),
+              Text(
+                'Your selected Car',
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                _car,
+              ),
+            ],
           ),
-          Text(
-            'Your selected Car',
-            style: TextStyle(fontSize: 15),
-          ),
-          Text(
-            _car,
-          ),
-        ],
-      ),
-    );
+        );
+      }
+    });
   }
 }

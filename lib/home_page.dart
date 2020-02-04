@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:AlGa/stats.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:AlGa/gmaps.dart';
 import 'package:AlGa/profile_page.dart';
@@ -49,7 +51,7 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           physics: new NeverScrollableScrollPhysics(),
           children: <Widget>[
-            Icon(Icons.alarm),
+            GeolocationExample(),
             Gmaps(),
             Profile()
           ],
