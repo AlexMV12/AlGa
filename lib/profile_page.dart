@@ -12,7 +12,7 @@ var _car = "novalue";
 Future <bool> getData() async {
   var user = await _auth.currentUser();
   var userUid = user.uid;
-  Firestore.instance
+  await Firestore.instance
       .collection("users")
       .document(userUid)
       .get()
@@ -21,11 +21,11 @@ Future <bool> getData() async {
         _car = ds["car"];
   });
 
-  var storage = FirebaseStorage.instance.ref().child(
+  await FirebaseStorage.instance.ref().child(
       "users_profilepics/" + userUid
-  );
+  ).getDownloadURL().then((val) => _profileImageUrl = val)
+  .catchError((err) => _profileImageUrl = "none");
 
-  _profileImageUrl = await storage.getDownloadURL();
   return true;
 }
 
@@ -35,6 +35,20 @@ class Profile extends StatelessWidget {
     return FutureBuilder<bool>(
       future: getData(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        var circleAvatar;
+
+        if (_profileImageUrl == 'none') {
+          circleAvatar = CircleAvatar(
+            radius: 80,
+            backgroundColor: Colors.grey,
+            child: Text("PIC", style: TextStyle(fontSize: 40)),
+        );} else {
+            circleAvatar = CircleAvatar(
+                radius: 80,
+                backgroundImage: NetworkImage(
+                  _profileImageUrl,
+                )
+            );}
         if (!snapshot.hasData) {
           // while data is loading:
           return Center(
@@ -47,12 +61,7 @@ class Profile extends StatelessWidget {
               SizedBox(
                 height: 30,
               ),
-              CircleAvatar(
-                          radius: 80,
-                          backgroundImage: NetworkImage(
-                            _profileImageUrl,
-                          )
-                      ),
+              circleAvatar,
               Padding(
                   padding: EdgeInsets.all(20.0),
                   child: Text(
