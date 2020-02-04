@@ -16,8 +16,7 @@ class _Gmaps extends State<Gmaps> {
   final Map<String, Marker> _markers = {};
   BitmapDescriptor myIcon;
 
-
-  final LatLng _center = const LatLng(45.283828 , 09.105340);
+  final LatLng _center = const LatLng(45.4642, 9.1900);
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
@@ -38,8 +37,8 @@ class _Gmaps extends State<Gmaps> {
 
   void setCustomMapPin() async {
     myIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(48, 48)),
-        'assets/car_icon.bmp');
+        ImageConfiguration(size: Size(3, 3)),
+        'assets/car_icon.png');
   }
 
   @override
