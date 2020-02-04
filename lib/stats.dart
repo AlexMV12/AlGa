@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
@@ -48,17 +49,21 @@ class GeolocationExampleState extends State<GeolocationExample> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Startup Name Generator'),
       ),
-      body: Center(
-          child: Text(
-              'Latitude: ${_position != null ? _position.latitude.toString() : '0'},'
-                  ' Longitude: ${_position != null ? _position.longitude.toString() : '0'}'
-          )
+      body: Column(
+          children: <Widget>[
+            Text(
+                'Latitude: ${_position != null ? _position.latitude.toString() : '0'},'
+                    ' Longitude: ${_position != null ? _position.longitude.toString() : '0'}'
+            ),
+          ],
       ),
     );
   }

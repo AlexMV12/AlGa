@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -15,6 +19,7 @@ class _Gmaps extends State<Gmaps> {
   Completer<GoogleMapController> _mapController = Completer();
   final Map<String, Marker> _markers = {};
   BitmapDescriptor myIcon;
+  List<GeoPoint> _pos = new List();
 
   final LatLng _center = const LatLng(45.4642, 9.1900);
 
@@ -26,19 +31,36 @@ class _Gmaps extends State<Gmaps> {
   void initState() {
     super.initState();
     setCustomMapPin();
-    /*
-    BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(48, 48)), 'assets/car_icon.png')
-        .then((onValue) {
-      myIcon = onValue;
-    });
-     */
   }
 
   void setCustomMapPin() async {
-    myIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(3, 3)),
-        'assets/car_icon.png');
+    final Uint8List markerIcon = await getBytesFromAsset('assets/car_icon.png', 150);
+    myIcon = BitmapDescriptor.fromBytes(markerIcon);
+    await getData();
+  }
+
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+  }
+
+  Future<void> getData() async {
+
+    final QuerySnapshot result = await Firestore.instance.collection('charging_stations').getDocuments();
+    final List<DocumentSnapshot> documents = result.documents;
+
+    documents.forEach((data) => _pos.add(data["pos"]));
+    /*
+    Firestore.instance
+        .collection("charging_stations")
+        .document("eY12sQWkyATy9hnXiwtU")
+        .get()
+        .then((DocumentSnapshot ds) {
+      _pos = ds["pos"];
+    });
+    */
   }
 
   @override
@@ -74,15 +96,24 @@ class _Gmaps extends State<Gmaps> {
         icon: myIcon
       );
       _markers["Current Location"] = marker;
+      int i = 0;
+      for (var elem in _pos) {
+        _markers["${i}"] = Marker(
+          markerId: MarkerId("charger: ${i}"),
+          position: LatLng(elem.latitude, elem.longitude),
+          infoWindow: InfoWindow(title: "Charger: ${i}"),
+        );
+        i++;
+      }
     });
   }
 
-  Future<void> _moveToPosition(Position pos) async {
+  Future<void> _moveToPosition(Position currPos) async {
     final GoogleMapController mapController = await _mapController.future;
     if(mapController == null) return;
     mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
-          target: LatLng(pos.latitude, pos.longitude),
+          target: LatLng(currPos.latitude, currPos.longitude),
           zoom: 15.0,
         )
       )
