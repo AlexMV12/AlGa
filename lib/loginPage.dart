@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -50,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                     // Validate will return true if is valid, or false if invalid.
                     if (form.validate()) {
                       print("$_email $_password");
-                      Provider.of<AuthService>(context).loginUser(_email, _password);
+                      //Provider.of<AuthService>(context).loginUser(_email, _password);
                   }
               }),
             ],

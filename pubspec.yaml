@@ -1,4 +1,4 @@
-name: flutter_app
+name: AlGa
 description: A new Flutter application.
 
 # The following defines the version and build number for your application.
@@ -30,6 +30,8 @@ dependencies:
   google_maps_flutter: ^0.5.22
   location: ^2.3.5
   geolocator: ^5.2.1
+  google_sign_in: ^4.0.0
+  firebase_dynamic_links: ^0.3.0
 
 dev_dependencies:
   flutter_test:
