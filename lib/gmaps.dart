@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _Gmaps extends State<Gmaps> {
   BitmapDescriptor carIcon;
   BitmapDescriptor stationIcon;
   List<ChargingStations> stations = new List();
+  Position currPos;
 
   double pinPillPosition = -100;
 
@@ -29,9 +31,10 @@ class _Gmaps extends State<Gmaps> {
 
   final LatLng _center = const LatLng(45.4642, 9.1900);
 
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController controller) async {
     _mapController.complete(controller);
-    _getLocation();
+    await _getLocation();
+    await _moveToPosition(currPos);
   }
 
   @override
@@ -41,9 +44,9 @@ class _Gmaps extends State<Gmaps> {
   }
 
   void setCustomMapPin() async {
-    final Uint8List car = await getBytesFromAsset('assets/car_icon.png', 150);
+    //final Uint8List car = await getBytesFromAsset('assets/car_icon.png', 150);
     final Uint8List station = await getBytesFromAsset('assets/station_green.png', 140);
-    carIcon = BitmapDescriptor.fromBytes(car);
+    //carIcon = BitmapDescriptor.fromBytes(car);
     stationIcon = BitmapDescriptor.fromBytes(station);
 
     await getData();
@@ -51,8 +54,8 @@ class _Gmaps extends State<Gmaps> {
     setState(() {
       int i = 0;
       for (var elem in stations) {
-        _markers["${i}"] = Marker(
-          markerId: MarkerId("charger: ${i}"),
+        _markers["$i"] = Marker(
+          markerId: MarkerId("charger: $i"),
           position: LatLng(elem.pos.latitude, elem.pos.longitude),
           onTap: () {
             setState(() {
@@ -88,6 +91,9 @@ class _Gmaps extends State<Gmaps> {
         children: <Widget> [
           GoogleMap(
             onMapCreated: _onMapCreated,
+            myLocationButtonEnabled: true,
+            myLocationEnabled: true,
+            compassEnabled: true,
             initialCameraPosition: CameraPosition(
               target: _center,
               zoom: 13.0,
@@ -103,7 +109,7 @@ class _Gmaps extends State<Gmaps> {
             bottom: pinPillPosition, right: 0, left: 0,
             duration: Duration(milliseconds: 200),
             child: Align(
-              alignment: Alignment.bottomCenter,
+              alignment: Alignment.bottomLeft,
               child: Container(
                 margin: EdgeInsets.all(20),
                 height: 70,
@@ -152,6 +158,15 @@ class _Gmaps extends State<Gmaps> {
                         ),
                       ),
                     ),
+                    FlatButton(
+                      onPressed: () {
+                        _launchMapsUrl(currentlySelectedStation.pos.latitude, currentlySelectedStation.pos.longitude);
+                      },
+                      child: Text(
+                        "GO",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    )
                   ]
                 )
               )
@@ -159,28 +174,29 @@ class _Gmaps extends State<Gmaps> {
           )
         ],
     ),
+      /*
       floatingActionButton: FloatingActionButton(
         onPressed: _getLocation,
         tooltip: 'Get Location',
         child: Icon(Icons.gps_fixed),
       )
+      */
     );
   }
 
-  void _getLocation() async {
-    var currentLocation = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-    await _moveToPosition(currentLocation);
+  void _launchMapsUrl(double latitude, double longitude)   async {
+    await _getLocation();
+    final url = 'https://www.google.com/maps/dir/${currPos.latitude},${currPos.longitude}/$latitude,$longitude';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
-    setState(() {
-      final marker = Marker(
-        markerId: MarkerId("curr_loc"),
-        position: LatLng(currentLocation.latitude, currentLocation.longitude),
-        infoWindow: InfoWindow(title: 'Your Location'),
-        icon: carIcon
-      );
-      _markers.update("Current Location", (existingValue) => marker, ifAbsent: () => marker,);
-    });
+  Future<void> _getLocation() async {
+    currPos = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
   }
 
   Future<void> _moveToPosition(Position currPos) async {
