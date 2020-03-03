@@ -127,7 +127,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
       ))
           .user;
       if (user != null) {
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(builder: (_) => HomePage()),
         );
       }

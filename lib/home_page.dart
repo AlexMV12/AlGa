@@ -22,12 +22,12 @@ class _HomePageState extends State<HomePage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Home Flutter Firebase"),
+          title: Text("AlGa"),
           actions: <Widget>[
             FlatButton(
               onPressed: () {
                 _auth.signOut();
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute<void>(builder: (_) => SignInPage()),
                 );
               },

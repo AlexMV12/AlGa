@@ -69,8 +69,7 @@ class ProfileState extends State<Profile> {
         .then((val) => _profileImageUrl = val)
         .catchError((err) => _profileImageUrl = "none");
 
-    return Future.delayed(Duration(seconds: 2), () => true);
-//    return true;
+    return true;
   }
 
   updateProfilePic() async {

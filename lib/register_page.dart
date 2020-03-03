@@ -1,18 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_page.dart';
+import 'package:email_validator/email_validator.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 void createRecord(var _useruid, var _name, var _car) async {
-  await Firestore.instance.collection("users")
-      .document(_useruid)
-      .setData({
+  await Firestore.instance.collection("users").document(_useruid).setData({
     'name': _name,
     'car': _car,
   });
@@ -25,119 +20,158 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _carController = TextEditingController();
-  bool _success;
-  String _userEmail;
+  final GlobalKey<FormState> _newNameForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _newCarForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _newEmailForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _newPasswordForm = GlobalKey<FormState>();
+
+  var _newName;
+  var _newCar;
+  var _newEmail;
+  var _newPassword;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please enter a valid email.';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please enter a valid password.';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please enter a valid username.';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _carController,
-              decoration: const InputDecoration(labelText: 'Car'),
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please enter a valid car model.';
-                }
-                return null;
-              },
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              alignment: Alignment.center,
-              child: RaisedButton(
-                onPressed: () async {
-                  if (_formKey.currentState.validate()) {
-                    _register();
-                  }
-                },
-                child: const Text('Submit'),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Text(_success == null
-                  ? ''
-                  : (_success
-                  ? 'Successfully registered ' + _userEmail
-                  : 'Registration failed')),
-            )
-          ],
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
-      ),
+        body: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Form(
+                  key: _newEmailForm,
+                  child: newEmailForm(),
+                ),
+                Form(
+                  key: _newNameForm,
+                  child: newNameForm(),
+                ),
+                Form(
+                  key: _newPasswordForm,
+                  child: newPasswordForm(),
+                ),
+                Form(
+                  key: _newCarForm,
+                  child: newCarForm(),
+                ),
+                Builder(
+                    builder: (context) => RaisedButton(
+                          onPressed: () async {
+                            if (_newEmailForm.currentState.validate() &&
+                                _newPasswordForm.currentState.validate() &&
+                                _newNameForm.currentState.validate() &&
+                                _newCarForm.currentState.validate()) {
+                              _newEmailForm.currentState.save();
+                              _newPasswordForm.currentState.save();
+                              _newNameForm.currentState.save();
+                              _newCarForm.currentState.save();
+
+                              var success = _register();
+
+                              success.then((value) {
+                                if (value) {
+                                  Navigator.pop(context); // Pop the "SignIn" route
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute<void>(
+                                        builder: (_) => HomePage()),
+                                  );
+                                } else {
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                    content: Text("Registration failed"),
+                                  ));
+                                }
+                              });
+                            }
+                          },
+                          child: const Text('Submit'),
+                        ))
+              ],
+            )));
+  }
+
+  Widget newEmailForm() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Email'),
+      keyboardType: TextInputType.emailAddress,
+      validator: (String value) {
+        if (!EmailValidator.validate(value)) {
+          return 'Enter a valid email.';
+        }
+        return null;
+      },
+      onSaved: (String val) {
+        _newEmail = val;
+      },
     );
   }
 
-  @override
-  void dispose() {
-    // Clean up the controller when the Widget is disposed
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Widget newPasswordForm() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Password'),
+      keyboardType: TextInputType.visiblePassword,
+      validator: (String value) {
+        if (value.isEmpty || value.length < 6 || value.length > 40) {
+          return 'Enter a valid password.';
+        }
+        return null;
+      },
+      onSaved: (String val) {
+        _newPassword = val;
+      },
+    );
+  }
+
+  Widget newNameForm() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Username'),
+      keyboardType: TextInputType.text,
+      validator: (String value) {
+        if (value.isEmpty || value.length < 6 || value.length > 25) {
+          return 'Enter a valid username.';
+        }
+        return null;
+      },
+      onSaved: (String val) {
+        _newName = val;
+      },
+    );
+  }
+
+  Widget newCarForm() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Car'),
+      keyboardType: TextInputType.visiblePassword,
+      validator: (String value) {
+        if (value.isEmpty || value.length < 6 || value.length > 40) {
+          return 'Enter a valid car.';
+        }
+        return null;
+      },
+      onSaved: (String val) {
+        _newCar = val;
+      },
+    );
   }
 
   // Example code for registration.
-  void _register() async {
+  Future<bool> _register() async {
     try {
       final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _newEmail,
+        password: _newPassword,
       ))
           .user;
       if (user != null) {
-        createRecord(user.uid, _usernameController.text, _carController.text);
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => HomePage()),
-        );
+        createRecord(user.uid, _newName, _newCar);
+        return true;
       } else {
-        _success = false;
+        return false;
       }
-    }
-    catch (PlatformException) {
-      setState(() {
-        _success = false;
-      });
+    } catch (PlatformException) {
+      return false;
     }
   }
 }
