@@ -6,13 +6,6 @@ import 'package:email_validator/email_validator.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-void createRecord(var _useruid, var _name, var _car) async {
-  await Firestore.instance.collection("users").document(_useruid).setData({
-    'name': _name,
-    'car': _car,
-  });
-}
-
 class RegisterPage extends StatefulWidget {
   final String title = 'Registration';
   @override
@@ -36,60 +29,68 @@ class RegisterPageState extends State<RegisterPage> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: Padding(
-            padding: EdgeInsets.all(8.0),
+        body: new SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Form(
-                  key: _newEmailForm,
-                  child: newEmailForm(),
-                ),
-                Form(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Form(
+              key: _newEmailForm,
+              child: newEmailForm(),
+            )),
+            Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Form(
                   key: _newNameForm,
                   child: newNameForm(),
-                ),
-                Form(
+                )),
+            Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Form(
                   key: _newPasswordForm,
                   child: newPasswordForm(),
-                ),
-                Form(
+                )),
+            Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Form(
                   key: _newCarForm,
                   child: newCarForm(),
-                ),
-                Builder(
-                    builder: (context) => RaisedButton(
-                          onPressed: () async {
-                            if (_newEmailForm.currentState.validate() &&
-                                _newPasswordForm.currentState.validate() &&
-                                _newNameForm.currentState.validate() &&
-                                _newCarForm.currentState.validate()) {
-                              _newEmailForm.currentState.save();
-                              _newPasswordForm.currentState.save();
-                              _newNameForm.currentState.save();
-                              _newCarForm.currentState.save();
+                )),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+            ),
+            RaisedButton(
+              onPressed: () async {
+                if (_newEmailForm.currentState.validate() &&
+                    _newPasswordForm.currentState.validate() &&
+                    _newNameForm.currentState.validate() &&
+                    _newCarForm.currentState.validate()) {
+                  _newEmailForm.currentState.save();
+                  _newPasswordForm.currentState.save();
+                  _newNameForm.currentState.save();
+                  _newCarForm.currentState.save();
 
-                              var success = _register();
+                  var success = _register();
 
-                              success.then((value) {
-                                if (value) {
-                                  Navigator.pop(context); // Pop the "SignIn" route
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute<void>(
-                                        builder: (_) => HomePage()),
-                                  );
-                                } else {
-                                  Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text("Registration failed"),
-                                  ));
-                                }
-                              });
-                            }
-                          },
-                          child: const Text('Submit'),
-                        ))
-              ],
-            )));
+                  success.then((value) {
+                    if (value) {
+                      Navigator.pop(context); // Pop the "SignIn" route
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute<void>(builder: (_) => HomePage()),
+                      );
+                    } else {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("Registration failed"),
+                      ));
+                    }
+                  });
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        )));
   }
 
   Widget newEmailForm() {
@@ -112,9 +113,10 @@ class RegisterPageState extends State<RegisterPage> {
     return TextFormField(
       decoration: const InputDecoration(labelText: 'Password'),
       keyboardType: TextInputType.visiblePassword,
+      obscureText: true,
       validator: (String value) {
         if (value.isEmpty || value.length < 6 || value.length > 40) {
-          return 'Enter a valid password.';
+          return 'Enter a valid password (length between 6 and 40 characters)';
         }
         return null;
       },
@@ -129,8 +131,8 @@ class RegisterPageState extends State<RegisterPage> {
       decoration: const InputDecoration(labelText: 'Username'),
       keyboardType: TextInputType.text,
       validator: (String value) {
-        if (value.isEmpty || value.length < 6 || value.length > 25) {
-          return 'Enter a valid username.';
+        if (value.isEmpty || value.length < 2 || value.length > 25) {
+          return 'Enter a valid username (length between 2 and 25 characters)';
         }
         return null;
       },
@@ -145,7 +147,7 @@ class RegisterPageState extends State<RegisterPage> {
       decoration: const InputDecoration(labelText: 'Car'),
       keyboardType: TextInputType.visiblePassword,
       validator: (String value) {
-        if (value.isEmpty || value.length < 6 || value.length > 40) {
+        if (value.isEmpty || value.length < 2 || value.length > 15) {
           return 'Enter a valid car.';
         }
         return null;
@@ -154,6 +156,13 @@ class RegisterPageState extends State<RegisterPage> {
         _newCar = val;
       },
     );
+  }
+
+  void createRecord(var _userUid, var _name, var _car) async {
+    await Firestore.instance.collection("users").document(_userUid).setData({
+      'name': _name,
+      'car': _car,
+    });
   }
 
   // Example code for registration.
