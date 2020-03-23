@@ -47,30 +47,33 @@ class SignInPageState extends State<SignInPage> {
             Padding(
               padding: EdgeInsets.all(8.0),
             ),
-            RaisedButton(
-              onPressed: () async {
-                if (_emailForm.currentState.validate() &&
-                    _passwordForm.currentState.validate()) {
-                  _emailForm.currentState.save();
-                  _passwordForm.currentState.save();
+            Builder(builder: (BuildContext context) {
+              // Builder wrapper is necessary to use the SnackBar
+              return RaisedButton(
+                onPressed: () async {
+                  if (_emailForm.currentState.validate() &&
+                      _passwordForm.currentState.validate()) {
+                    _emailForm.currentState.save();
+                    _passwordForm.currentState.save();
 
-                  var success = _signInWithEmailAndPassword();
+                    var success = _signInWithEmailAndPassword();
 
-                  success.then((value) {
-                    if (value) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute<void>(builder: (_) => HomePage()),
-                      );
-                    } else {
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text("Sign in failed, try again"),
-                      ));
-                    }
-                  });
-                }
-              },
-              child: const Text('Sign in'),
-            ),
+                    success.then((value) {
+                      if (value) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute<void>(builder: (_) => HomePage()),
+                        );
+                      } else {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Sign in failed, try again"),
+                        ));
+                      }
+                    });
+                  }
+                },
+                child: const Text('Sign in'),
+              );
+            }),
             Padding(
               padding: EdgeInsets.all(8.0),
             ),

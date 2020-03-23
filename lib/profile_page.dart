@@ -17,7 +17,6 @@ class Profile extends StatefulWidget {
 
 class ProfileState extends State<Profile> {
   final GlobalKey<FormState> _newNameForm = GlobalKey<FormState>();
-  final GlobalKey<FormState> _newCarForm = GlobalKey<FormState>();
   final GlobalKey<FormState> _newEmailForm = GlobalKey<FormState>();
   final GlobalKey<FormState> _currPasswordForm = GlobalKey<FormState>();
   final GlobalKey<FormState> _newPasswordForm = GlobalKey<FormState>();
@@ -31,9 +30,10 @@ class ProfileState extends State<Profile> {
   var _userUid;
   var _userEmail;
   var _profileImageUrl;
-  var _name = "novalue";
-  var _car = "novalue";
+  var _name;
+  var _car;
 
+  List<String> _cars = [];
   Future<bool> _isDataReady;
 
   @override
@@ -53,28 +53,32 @@ class ProfileState extends State<Profile> {
               child: CircularProgressIndicator(),
             );
           } else {
-            var circleAvatar;
-            if (_profileImageUrl == 'none') {
-              circleAvatar = CircleAvatar(
-                radius: 80,
-                backgroundColor: Colors.grey,
-                child: Text("PIC", style: TextStyle(fontSize: 40)),
-              );
-            } else {
-              circleAvatar = CircleAvatar(
-                  radius: 90,
-                  backgroundImage: NetworkImage(
-                    _profileImageUrl,
+            if (!snapshot.data) {
+              print("Connection error! Can't show profile now.");
+              return Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.error,
+                        size: 100,
+                      ),
+                      Text(
+                        "Check your internet connection.",
+                        style: TextStyle(fontSize: 20),
+                      )
+                    ],
                   ));
-            }
-            return SingleChildScrollView(
+            } else return SingleChildScrollView(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
                   height: 20,
                 ),
-                circleAvatar,
+                avatar(),
                 IconButton(
                   icon: Icon(Icons.photo_camera),
                   tooltip: 'Upload new profile pic',
@@ -146,37 +150,55 @@ class ProfileState extends State<Profile> {
                     ),
                   ),
                   Spacer(),
-                  Text(
-                    _car,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              content: Form(
-                                key: _newCarForm,
-                                child: newCarForm(),
-                              ),
-                              actions: <Widget>[
-                                IconButton(
-                                  icon: Icon(Icons.check),
-                                  onPressed: () {
-                                    if (_newCarForm.currentState.validate()) {
-                                      _newCarForm.currentState.save();
-                                      updateCar();
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                )
-                              ],
-                            );
-                          })
+                  DropdownButton<String>(
+                    value: _car,
+//                  icon: Icon(Icons.arrow_downward),
+//                  iconSize: 24,
+//                  elevation: 20,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        _newCar = newValue;
+                        updateCar();
+                      });
                     },
+                    items: _cars.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
+//                  Text(
+//                    _car,
+//                    style: TextStyle(fontSize: 20),
+//                  ),
+//                  IconButton(
+//                    icon: Icon(Icons.edit),
+//                    onPressed: () => {
+//                      showDialog(
+//                          context: context,
+//                          builder: (BuildContext context) {
+//                            return AlertDialog(
+//                              content: Form(
+//                                key: _newCarForm,
+//                                child: newCarForm(),
+//                              ),
+//                              actions: <Widget>[
+//                                IconButton(
+//                                  icon: Icon(Icons.check),
+//                                  onPressed: () {
+//                                    if (_newCarForm.currentState.validate()) {
+//                                      _newCarForm.currentState.save();
+//                                      updateCar();
+//                                      Navigator.pop(context);
+//                                    }
+//                                  },
+//                                )
+//                              ],
+//                            );
+//                          })
+//                    },
+//                  ),
                   Spacer(),
                 ]),
                 Divider(),
@@ -295,13 +317,8 @@ class ProfileState extends State<Profile> {
                                     if (_currPasswordForm.currentState
                                         .validate()) {
                                       _currPasswordForm.currentState.save();
+                                      Navigator.pop(context);
                                       deleteUser();
-                                      _auth.signOut();
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute<void>(
-                                            builder: (_) => SignInPage()),
-                                      );
                                     }
                                   })
                             ],
@@ -317,6 +334,22 @@ class ProfileState extends State<Profile> {
             ));
           }
         });
+  }
+
+  Widget avatar() {
+    if (_profileImageUrl == 'none') {
+       return CircleAvatar(
+        radius: 80,
+        backgroundColor: Colors.grey,
+        child: Text("PIC", style: TextStyle(fontSize: 40)),
+      );
+    } else {
+      return CircleAvatar(
+          radius: 90,
+          backgroundImage: NetworkImage(
+            _profileImageUrl,
+          ));
+    }
   }
 
   Widget newNameForm() {
@@ -401,11 +434,10 @@ class ProfileState extends State<Profile> {
 
   Future<bool> _signInWithEmailAndPassword() async {
     try {
-      final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
         email: _userEmail,
         password: _currPassword,
-      ))
-          .user;
+      );
       return true;
     } catch (PlatformException) {
       print("Error in logging in.");
@@ -414,6 +446,8 @@ class ProfileState extends State<Profile> {
   }
 
   Future<bool> getData() async {
+    // Try to fetch the data of users and available cars.
+    // Return false in case of errors, true otherwise.
     var user = await _auth.currentUser();
     _userUid = user.uid;
     _userEmail = user.email;
@@ -425,7 +459,6 @@ class ProfileState extends State<Profile> {
       _name = ds["name"];
       _car = ds["car"];
     });
-
 //    await FirebaseStorage.instance
 //        .ref()
 //        .child("users_profilepics/" + _userUid)
@@ -435,19 +468,31 @@ class ProfileState extends State<Profile> {
 //          _profileImageUrl = "none";
 //          print("Profile pic not found.");
 //        });
-
-    var profilePicLocation =
-        FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
-
     try {
+      var profilePicLocation =
+      FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
       _profileImageUrl = await profilePicLocation.getDownloadURL();
-    } on Exception catch (e) {
+    } catch (_) {
       _profileImageUrl = "none";
       print("Profile pic not found.");
+      return false;
     }
     // If an exception is been thrown in the console here, see
     // https://github.com/FirebaseExtended/flutterfire/issues/792
 
+    if (_cars.length == 0)
+      await Firestore.instance
+          .collection("cars")
+          .getDocuments()
+          .then((snapshot) {
+            for (var car in snapshot.documents) {
+              _cars.add(car["name"]);
+            }
+      });
+
+    if (_cars.isEmpty || _name == null || _car == null) {
+      return false;
+    }
     return true;
   }
 
@@ -580,14 +625,19 @@ class ProfileState extends State<Profile> {
 
       try {
         await profilePicLocation.delete();
-      } on Exception catch (e) {
+      } on Exception {
         print("Profile pic not found, skipping deletion...");
       }
 
       await user.delete();
+      _auth.signOut();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+            builder: (_) => SignInPage()),
+      );
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Error: Account not deleted!"),
+        content: Text("The password is not correct. Try again."),
       ));
       return;
     }
