@@ -87,7 +87,7 @@ class ProfileState extends State<Profile> {
                 Divider(),
                 Row(
                   children: <Widget>[
-                    SizedBox(width: 50),
+                    Spacer(),
                     Icon(
                       Icons.account_box,
                     ),
@@ -99,9 +99,13 @@ class ProfileState extends State<Profile> {
                       ),
                     ),
                     Spacer(),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Spacer(),
                     Text(
                       _name,
-                      style: TextStyle(fontSize: 22),
                     ),
                     IconButton(
                       icon: Icon(Icons.edit),
@@ -131,76 +135,43 @@ class ProfileState extends State<Profile> {
                             })
                       },
                     ),
-                    Spacer(
-                      flex: 2,
-                    ),
+                    Spacer()
                   ],
                 ),
                 Divider(),
                 Row(children: <Widget>[
-                  SizedBox(width: 50),
+//                  SizedBox(width: 50),
+                  Spacer(),
                   Icon(
                     Icons.directions_car,
                   ),
                   SizedBox(
-                    width: 100,
+                    width: 150,
                     child: Text(
-                      'Your selected\ncar:',
+                      'Your selected car:',
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  Spacer(),
-                  DropdownButton<String>(
-                    value: _car,
+                  Spacer()
+                ]),
+                DropdownButton<String>(
+                  value: _car,
 //                  icon: Icon(Icons.arrow_downward),
 //                  iconSize: 24,
 //                  elevation: 20,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        _newCar = newValue;
-                        updateCar();
-                      });
-                    },
-                    items: _cars.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-//                  Text(
-//                    _car,
-//                    style: TextStyle(fontSize: 20),
-//                  ),
-//                  IconButton(
-//                    icon: Icon(Icons.edit),
-//                    onPressed: () => {
-//                      showDialog(
-//                          context: context,
-//                          builder: (BuildContext context) {
-//                            return AlertDialog(
-//                              content: Form(
-//                                key: _newCarForm,
-//                                child: newCarForm(),
-//                              ),
-//                              actions: <Widget>[
-//                                IconButton(
-//                                  icon: Icon(Icons.check),
-//                                  onPressed: () {
-//                                    if (_newCarForm.currentState.validate()) {
-//                                      _newCarForm.currentState.save();
-//                                      updateCar();
-//                                      Navigator.pop(context);
-//                                    }
-//                                  },
-//                                )
-//                              ],
-//                            );
-//                          })
-//                    },
-//                  ),
-                  Spacer(),
-                ]),
+                  onChanged: (String newValue) {
+                    setState(() {
+                      _newCar = newValue;
+                      updateCar();
+                    });
+                  },
+                  items: _cars.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: FittedBox(child: Text(value, overflow: TextOverflow.ellipsis), fit: BoxFit.contain),
+                    );
+                  }).toList(),
+                ),
                 Divider(),
                 Row(children: <Widget>[
                   SizedBox(width: 50),
