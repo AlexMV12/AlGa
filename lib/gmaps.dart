@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:math';
 
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:AlGa/charging_stations.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Gmaps extends StatefulWidget {
   @override
   _Gmaps createState() => _Gmaps();
 }
 
-
 class _Gmaps extends State<Gmaps> {
   Completer<GoogleMapController> _mapController = Completer();
   Map<String, Marker> _markers = {};
-  BitmapDescriptor carIcon;
   BitmapDescriptor stationIcon;
   List<ChargingStations> stations = new List();
   Position currPos;
@@ -31,22 +31,278 @@ class _Gmaps extends State<Gmaps> {
 
   final LatLng _center = const LatLng(45.4642, 9.1900);
 
+  PanelController _pc = new PanelController();
+
+  @override
+  void initState() {
+    super.initState();
+    setCustomMapPin();
+    setState(() {
+      if(_pc.isAttached)
+        _pc.isPanelClosed;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    NumberFormat numberFormat = new NumberFormat("0.00");
+    return SlidingUpPanel(
+      controller: _pc,
+      minHeight: 20,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(15.0),
+        topRight: Radius.circular(15.0),
+      ),
+      panelBuilder: (ScrollController sc) => Center(
+        child: DefaultTabController(
+          length: 3,
+          initialIndex: 0,
+          child: Column(
+            children: <Widget> [
+              Container(
+                height: 20,
+                child: slide(),
+              ),
+              Container(
+                color: Colors.blue,
+                child: TabBar(
+                  tabs: <Widget>[
+                    Tab(icon: Icon(Icons.info), text: "order by price"),
+                    Tab(icon: Icon(Icons.local_gas_station), text: "order by speed"),
+                    Tab(icon: Icon(Icons.person), text: "order by\ndistance"),
+                  ],
+                )
+              ),
+              Expanded(
+                child: Container(
+                  height: 300.0,
+                  child: TabBarView(
+                    physics: new NeverScrollableScrollPhysics(),
+                    children: <Widget>[
+                      ListView.builder(
+                        controller: sc,
+                        itemCount: stations.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          List<ChargingStations> temp = stations;
+                          temp.sort((a,b) => a.price.compareTo(b.price));
+                          return ListTile(
+                            title: Text(
+                                "Price: ${temp[index].price.toString()}€/kW",
+                                style: TextStyle(color: Colors.green)
+                            ),
+                            subtitle: Text(
+                                "Speed: ${temp[index].speed.toString()}kW/h",
+                                style: TextStyle(fontSize: 12, color: Colors.grey)
+                            ),
+                            trailing: FlatButton(
+                              onPressed: () {
+                                _launchMapsUrl(
+                                    temp[index].pos.latitude,
+                                    temp[index].pos.longitude);
+                              },
+                              child: Text(
+                                "GO",
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      ListView.builder(
+                        controller: sc,
+                        itemCount: stations.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          List<ChargingStations> temp = stations;
+                          temp.sort((a,b) => a.speed.compareTo(b.speed));
+                          return ListTile(
+                            title: Text(
+                                "Speed: ${temp[index].speed.toString()}kW/h",
+                                style: TextStyle(fontSize: 12, color: Colors.green)
+                            ),
+                            subtitle: Text(
+                                "Price: ${temp[index].price.toString()}€/kW",
+                                style: TextStyle(color: Colors.grey)
+                            ),
+                            trailing: FlatButton(
+                              onPressed: () {
+                                _launchMapsUrl(
+                                    temp[index].pos.latitude,
+                                    temp[index].pos.longitude);
+                              },
+                              child: Text(
+                                "GO",
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      ListView.builder(
+                        controller: sc,
+                        itemCount: stations.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          List<ChargingStations> temp = stations;
+                          _getLocation();
+                          for(ChargingStations x in temp) {
+                            x.distance = calculateDistance(currPos.latitude, currPos.longitude, x.pos.latitude, x.pos.longitude);
+                          }
+                          temp.sort((a,b) => a.distance.compareTo(b.distance));
+                          return ListTile(
+                            title: Text(
+                                "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
+                                style: TextStyle(color: Colors.green)
+                            ),
+                            subtitle: Text(
+                                "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
+                                style: TextStyle(fontSize: 12, color: Colors.grey)
+                            ),
+                            trailing: FlatButton(
+                              onPressed: () {
+                                _launchMapsUrl(
+                                    temp[index].pos.latitude,
+                                    temp[index].pos.longitude);
+                              },
+                              child: Text(
+                                "GO",
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ]
+          ),
+        )
+      ),
+      body: Center(
+        child: Stack(
+          children: <Widget>[
+            GoogleMap(
+              onMapCreated: _onMapCreated,
+              myLocationButtonEnabled: true,
+              myLocationEnabled: true,
+              compassEnabled: true,
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: 13.0,
+              ),
+              markers: _markers.values.toSet(),
+              onTap: (LatLng location) {
+                setState(() {
+                  pinPillPosition = -100;
+                });
+              },
+            ),
+            AnimatedPositioned(
+              bottom: pinPillPosition,
+              right: 0,
+              left: 0,
+              duration: Duration(milliseconds: 200),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  margin: EdgeInsets.all(20),
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        blurRadius: 20,
+                        offset: Offset.zero,
+                        color: Colors.grey.withOpacity(0.5)
+                      )
+                    ]
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.only(left: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "Price: ${currentlySelectedStation.price.toString()}€/kW",
+                                style: TextStyle(color: Colors.green)
+                              ),
+                              Text(
+                                "Speed: ${currentlySelectedStation.speed.toString()}kW/h",
+                                style: TextStyle(fontSize: 12, color: Colors.grey)
+                              ),
+                              Text("Available: YES",
+                                style: TextStyle(fontSize: 12, color: Colors.grey)
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          _launchMapsUrl(
+                            currentlySelectedStation.pos.latitude,
+                            currentlySelectedStation.pos.longitude);
+                        },
+                        child: Text(
+                          "GO",
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      )
+                    ]
+                  )
+                )
+              )
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  double calculateDistance(double initialLat, double initialLong,
+      double finalLat, double finalLong) {
+    int R = 6371;
+    double dLat = toRadians(finalLat-initialLat);
+    double dLon = toRadians(finalLong-initialLong);
+    initialLat = toRadians(initialLat);
+    finalLat = toRadians(finalLat);
+
+    double a = sin(dLat/2)*sin(dLat/2)+sin(dLon/2)*sin(dLon/2)*cos(initialLat)*cos(finalLat);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+    return R * c;
+  }
+
+  double toRadians(double deg) {
+    return deg * pi/180.0;
+  }
+
+  Text slide() {
+      if (_pc.isAttached) {
+        if(_pc.isPanelClosed) {
+          return Text("chiuso", style: TextStyle(color: Colors.black));
+        }
+        else {
+          return Text("aperto", style: TextStyle(color: Colors.black));
+        }
+      }
+      return Text("not attached", style: TextStyle(color: Colors.black));
+  }
+
   void _onMapCreated(GoogleMapController controller) async {
     _mapController.complete(controller);
     await _getLocation();
     await _moveToPosition(currPos);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    setCustomMapPin();
-  }
-
   void setCustomMapPin() async {
-    //final Uint8List car = await getBytesFromAsset('assets/car_icon.png', 150);
     final Uint8List station = await getBytesFromAsset('assets/station_green.png', 140);
-    //carIcon = BitmapDescriptor.fromBytes(car);
     stationIcon = BitmapDescriptor.fromBytes(station);
 
     await getData();
@@ -74,7 +330,9 @@ class _Gmaps extends State<Gmaps> {
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+        .buffer
+        .asUint8List();
   }
 
   Future<void> getData() async {
@@ -84,112 +342,14 @@ class _Gmaps extends State<Gmaps> {
     documents.forEach((data) => stations.add(ChargingStations(data["pos"], data["speed"], data["price"])));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: <Widget> [
-          GoogleMap(
-            onMapCreated: _onMapCreated,
-            myLocationButtonEnabled: true,
-            myLocationEnabled: true,
-            compassEnabled: true,
-            initialCameraPosition: CameraPosition(
-              target: _center,
-              zoom: 13.0,
-            ),
-            markers: _markers.values.toSet(),
-            onTap: (LatLng location) {
-              setState(() {
-                pinPillPosition = -100;
-              });
-            },
-          ),
-          AnimatedPositioned(
-            bottom: pinPillPosition, right: 0, left: 0,
-            duration: Duration(milliseconds: 200),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
-                margin: EdgeInsets.all(20),
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(50)),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      blurRadius: 20,
-                      offset: Offset.zero,
-                      color: Colors.grey.withOpacity(0.5)
-                    )
-                  ]
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.only(left: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "Price: ${currentlySelectedStation.price.toString()}€/kW",
-                              style: TextStyle(
-                                color: Colors.green
-                              )
-                            ),
-                            Text(
-                              "Speed: ${currentlySelectedStation.speed.toString()}kW/h",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey
-                              )
-                            ),
-                            Text("Available: YES",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey
-                              )
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    FlatButton(
-                      onPressed: () {
-                        _launchMapsUrl(currentlySelectedStation.pos.latitude, currentlySelectedStation.pos.longitude);
-                      },
-                      child: Text(
-                        "GO",
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    )
-                  ]
-                )
-              )
-            )
-          )
-        ],
-    ),
-      /*
-      floatingActionButton: FloatingActionButton(
-        onPressed: _getLocation,
-        tooltip: 'Get Location',
-        child: Icon(Icons.gps_fixed),
-      )
-      */
-    );
-  }
-
-  void _launchMapsUrl(double latitude, double longitude)   async {
+  void _launchMapsUrl(double latitude, double longitude) async {
     await _getLocation();
-    final url = 'https://www.google.com/maps/dir/${currPos.latitude},${currPos.longitude}/$latitude,$longitude';
+    final url =
+        'https://www.google.com/maps/dir/${currPos.latitude},${currPos.longitude}/$latitude,$longitude';
     if (await canLaunch(url)) {
       await launch(url);
-    } else {
+    }
+    else {
       throw 'Could not launch $url';
     }
   }
@@ -201,13 +361,10 @@ class _Gmaps extends State<Gmaps> {
 
   Future<void> _moveToPosition(Position currPos) async {
     final GoogleMapController mapController = await _mapController.future;
-    if(mapController == null) return;
-    mapController.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(currPos.latitude, currPos.longitude),
-          zoom: 15.0,
-        )
-      )
-    );
+    if (mapController == null) return;
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: LatLng(currPos.latitude, currPos.longitude),
+      zoom: 15.0,
+    )));
   }
 }
