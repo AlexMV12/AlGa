@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -71,42 +72,141 @@ class ProfileState extends State<Profile> {
                       )
                     ],
                   ));
-            } else return SingleChildScrollView(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(
-                  height: 20,
-                ),
-                avatar(),
-                IconButton(
-                  icon: Icon(Icons.photo_camera),
-                  tooltip: 'Upload new profile pic',
-                  onPressed: () => (updateProfilePic()),
-                ),
-                Divider(),
-                Row(
-                  children: <Widget>[
-                    Spacer(),
-                    Icon(
-                      Icons.account_box,
-                    ),
-                    SizedBox(
-                      width: 100,
-                      child: Text(
-                        "Your name:",
-                        textAlign: TextAlign.center,
+            } else
+              return SingleChildScrollView(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    height: 20,
+                  ),
+                  avatar(),
+                  IconButton(
+                    icon: Icon(Icons.photo_camera),
+                    tooltip: 'Upload new profile pic',
+                    onPressed: () => (updateProfilePic()),
+                  ),
+                  Divider(),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(width: 30),
+                      Icon(
+                        Icons.account_box,
+                        size: 30,
                       ),
+                      SizedBox(width: 30),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "Name",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          Text(
+                            _name,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(fontSize: 19),
+                          ),
+                        ],
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Form(
+                                    key: _newNameForm,
+                                    child: newNameForm(),
+                                  ),
+                                  actions: <Widget>[
+                                    IconButton(
+                                      icon: Icon(Icons.check),
+                                      onPressed: () {
+                                        if (_newNameForm.currentState
+                                            .validate()) {
+                                          _newNameForm.currentState.save();
+                                          updateName();
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                    )
+                                  ],
+                                );
+                              })
+                        },
+                      ),
+                      SizedBox(width: 30),
+                    ],
+                  ),
+                  Divider(),
+                  Row(children: <Widget>[
+//                  SizedBox(width: 50),
+                    SizedBox(width: 30),
+                    Icon(
+                      Icons.directions_car,
+                      size: 30,
+                    ),
+                    SizedBox(width: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "Car",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        DropdownButton<String>(
+//                                isExpanded: true,
+                          value: _car,
+                          onChanged: (String newValue) {
+                            setState(() {
+                              _newCar = newValue;
+                              updateCar();
+                            });
+                          },
+                          items: _cars
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: FittedBox(
+                                  child: Text(value,
+                                      overflow: TextOverflow.ellipsis),
+                                  fit: BoxFit.contain),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                    Spacer()
+                  ]),
+                  Divider(),
+                  Row(children: <Widget>[
+                    SizedBox(width: 30),
+                    Icon(
+                      Icons.email,
+                      size: 30,
+                    ),
+                    SizedBox(width: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "E-Mail",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        Text(
+                          _userEmail,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontSize: 17),
+                        ),
+                      ],
                     ),
                     Spacer(),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Spacer(),
-                    Text(
-                      _name,
-                    ),
                     IconButton(
                       icon: Icon(Icons.edit),
                       onPressed: () => {
@@ -114,84 +214,39 @@ class ProfileState extends State<Profile> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                content: Form(
-                                  key: _newNameForm,
-                                  child: newNameForm(),
-                                ),
+                                content: new SingleChildScrollView(
+                                    child: new Form(
+                                        key: _newEmailForm,
+                                        child: Column(children: <Widget>[
+                                          Text(
+                                              "To perform this action, you have to provide also your password."),
+                                          currPasswordForm(),
+                                          newEmailForm()
+                                        ]))),
                                 actions: <Widget>[
                                   IconButton(
-                                    icon: Icon(Icons.check),
-                                    onPressed: () {
-                                      if (_newNameForm.currentState
-                                          .validate()) {
-                                        _newNameForm.currentState.save();
-                                        updateName();
-                                        Navigator.pop(context);
-                                      }
-                                    },
-                                  )
+                                      icon: Icon(Icons.check),
+                                      onPressed: () {
+                                        if (_newEmailForm.currentState
+                                            .validate()) {
+                                          _newEmailForm.currentState.save();
+                                          updateEmail();
+                                          Navigator.pop(context);
+                                        }
+                                      })
                                 ],
                               );
                             })
                       },
                     ),
-                    Spacer()
-                  ],
-                ),
-                Divider(),
-                Row(children: <Widget>[
-//                  SizedBox(width: 50),
-                  Spacer(),
-                  Icon(
-                    Icons.directions_car,
-                  ),
-                  SizedBox(
-                    width: 150,
-                    child: Text(
-                      'Your selected car:',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Spacer()
-                ]),
-                DropdownButton<String>(
-                  value: _car,
-//                  icon: Icon(Icons.arrow_downward),
-//                  iconSize: 24,
-//                  elevation: 20,
-                  onChanged: (String newValue) {
-                    setState(() {
-                      _newCar = newValue;
-                      updateCar();
-                    });
-                  },
-                  items: _cars.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: FittedBox(child: Text(value, overflow: TextOverflow.ellipsis), fit: BoxFit.contain),
-                    );
-                  }).toList(),
-                ),
-                Divider(),
-                Row(children: <Widget>[
-                  SizedBox(width: 50),
-                  Icon(
-                    Icons.email,
-                  ),
-                  SizedBox(
-                    width: 100,
-                    child: Text(
-                      'Your email:',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    _userEmail,
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.edit),
+                    SizedBox(width: 30)
+                  ]),
+                  Divider(),
+                  FlatButton(
+                    color: Colors.red,
+                    textColor: Colors.white,
+                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.blueAccent,
                     onPressed: () => {
                       showDialog(
                           context: context,
@@ -199,21 +254,21 @@ class ProfileState extends State<Profile> {
                             return AlertDialog(
                               content: new SingleChildScrollView(
                                   child: new Form(
-                                      key: _newEmailForm,
+                                      key: _newPasswordForm,
                                       child: Column(children: <Widget>[
                                         Text(
-                                            "To perform this action, you have to provide also your password."),
+                                            "Enter both your old and your new password."),
                                         currPasswordForm(),
-                                        newEmailForm()
+                                        newPasswordForm()
                                       ]))),
                               actions: <Widget>[
                                 IconButton(
                                     icon: Icon(Icons.check),
                                     onPressed: () {
-                                      if (_newEmailForm.currentState
+                                      if (_newPasswordForm.currentState
                                           .validate()) {
-                                        _newEmailForm.currentState.save();
-                                        updateEmail();
+                                        _newPasswordForm.currentState.save();
+                                        updatePassword();
                                         Navigator.pop(context);
                                       }
                                     })
@@ -221,95 +276,57 @@ class ProfileState extends State<Profile> {
                             );
                           })
                     },
+                    child: Text(
+                      "Edit Password",
+                      style: TextStyle(fontSize: 15.0),
+                    ),
                   ),
-                  Spacer(),
-                ]),
-                Divider(),
-                FlatButton(
-                  color: Colors.red,
-                  textColor: Colors.white,
-                  padding: EdgeInsets.all(8.0),
-                  splashColor: Colors.blueAccent,
-                  onPressed: () => {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: new SingleChildScrollView(
-                                child: new Form(
-                                    key: _newPasswordForm,
-                                    child: Column(children: <Widget>[
-                                      Text(
-                                          "Enter both your old and your new password."),
-                                      currPasswordForm(),
-                                      newPasswordForm()
-                                    ]))),
-                            actions: <Widget>[
-                              IconButton(
-                                  icon: Icon(Icons.check),
-                                  onPressed: () {
-                                    if (_newPasswordForm.currentState
-                                        .validate()) {
-                                      _newPasswordForm.currentState.save();
-                                      updatePassword();
-                                      Navigator.pop(context);
-                                    }
-                                  })
-                            ],
-                          );
-                        })
-                  },
-                  child: Text(
-                    "Edit Password",
-                    style: TextStyle(fontSize: 15.0),
+                  FlatButton(
+                    color: Colors.red,
+                    textColor: Colors.white,
+                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.blueAccent,
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: new SingleChildScrollView(
+                                  child: new Form(
+                                      key: _currPasswordForm,
+                                      child: Column(children: <Widget>[
+                                        Text("Enter your password."),
+                                        currPasswordForm(),
+                                      ]))),
+                              actions: <Widget>[
+                                IconButton(
+                                    icon: Icon(Icons.check),
+                                    onPressed: () {
+                                      if (_currPasswordForm.currentState
+                                          .validate()) {
+                                        _currPasswordForm.currentState.save();
+                                        Navigator.pop(context);
+                                        deleteUser();
+                                      }
+                                    })
+                              ],
+                            );
+                          });
+                    },
+                    child: Text(
+                      "Delete account",
+                      style: TextStyle(fontSize: 15.0),
+                    ),
                   ),
-                ),
-                FlatButton(
-                  color: Colors.red,
-                  textColor: Colors.white,
-                  padding: EdgeInsets.all(8.0),
-                  splashColor: Colors.blueAccent,
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: new SingleChildScrollView(
-                                child: new Form(
-                                    key: _currPasswordForm,
-                                    child: Column(children: <Widget>[
-                                      Text("Enter your password."),
-                                      currPasswordForm(),
-                                    ]))),
-                            actions: <Widget>[
-                              IconButton(
-                                  icon: Icon(Icons.check),
-                                  onPressed: () {
-                                    if (_currPasswordForm.currentState
-                                        .validate()) {
-                                      _currPasswordForm.currentState.save();
-                                      Navigator.pop(context);
-                                      deleteUser();
-                                    }
-                                  })
-                            ],
-                          );
-                        });
-                  },
-                  child: Text(
-                    "Delete account",
-                    style: TextStyle(fontSize: 15.0),
-                  ),
-                ),
-              ],
-            ));
+                ],
+              ));
           }
         });
   }
 
   Widget avatar() {
     if (_profileImageUrl == 'none') {
-       return CircleAvatar(
+      return CircleAvatar(
         radius: 80,
         backgroundColor: Colors.grey,
         child: Text("PIC", style: TextStyle(fontSize: 40)),
@@ -441,12 +458,11 @@ class ProfileState extends State<Profile> {
 //        });
     try {
       var profilePicLocation =
-      FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
+          FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
       _profileImageUrl = await profilePicLocation.getDownloadURL();
     } catch (_) {
       _profileImageUrl = "none";
-      print("Profile pic not found.");
-      return false;
+      print("Profile pic not found, skipping...");
     }
     // If an exception is been thrown in the console here, see
     // https://github.com/FirebaseExtended/flutterfire/issues/792
@@ -456,9 +472,9 @@ class ProfileState extends State<Profile> {
           .collection("cars")
           .getDocuments()
           .then((snapshot) {
-            for (var car in snapshot.documents) {
-              _cars.add(car["name"]);
-            }
+        for (var car in snapshot.documents) {
+          _cars.add(car["name"]);
+        }
       });
 
     if (_cars.isEmpty || _name == null || _car == null) {
@@ -603,8 +619,7 @@ class ProfileState extends State<Profile> {
       await user.delete();
       _auth.signOut();
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-            builder: (_) => SignInPage()),
+        MaterialPageRoute<void>(builder: (_) => SignInPage()),
       );
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(

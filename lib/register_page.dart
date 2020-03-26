@@ -89,15 +89,19 @@ class RegisterPageState extends State<RegisterPage> {
                             child: newPasswordForm(),
                           )),
                       Padding(
-                          padding: EdgeInsets.all(8.0), child: newCarForm()),
+                          padding: EdgeInsets.all(8.0),
+                          child: Form(
+                            key: _newCarForm,
+                            child: newCarForm(),
+                          )),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                       ),
                       RaisedButton(
                         onPressed: () async {
                           if (_newEmailForm.currentState.validate() &&
-                              _newPasswordForm.currentState.validate() &&
                               _newNameForm.currentState.validate() &&
+                              _newPasswordForm.currentState.validate() &&
                               _newCarForm.currentState.validate()) {
                             _newEmailForm.currentState.save();
                             _newPasswordForm.currentState.save();
@@ -181,22 +185,23 @@ class RegisterPageState extends State<RegisterPage> {
 
   Widget newCarForm() {
     return Row(children: <Widget>[
-      Text("Select your car:"),
-      Spacer(),
-      DropdownButton<String>(
+      Expanded(child: DropdownButtonFormField<String>(
+        isExpanded: true,
+        hint: Text("Select your car"),
+        value: _newCar,
         onChanged: (String newValue) {
           setState(() {
             _newCar = newValue;
           });
         },
+        validator: (value) => value == null ? 'Enter a valid car!' : null,
         items: _cars.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(value),
           );
         }).toList(),
-      ),
-      Spacer()
+      ))
     ]);
   }
 
