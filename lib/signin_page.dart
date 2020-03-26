@@ -2,163 +2,144 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:email_validator/email_validator.dart';
 import 'home_page.dart';
 import 'register_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class SignInPage extends StatefulWidget {
-  final String title = 'Sign In';
+  final String title = 'AlGa';
   @override
   State<StatefulWidget> createState() => SignInPageState();
 }
 
 class SignInPageState extends State<SignInPage> {
+  final GlobalKey<FormState> _emailForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _passwordForm = GlobalKey<FormState>();
+
+  var _email;
+  var _password;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Builder(builder: (BuildContext context) {
-        return ListView(
-          scrollDirection: Axis.vertical,
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: new SingleChildScrollView(
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            _EmailPasswordForm(),
-            _Register(),
-//            _AnonymouslySignInSection(),
+            Container(
+              child: Text('Sign in with email and password'),
+              padding: EdgeInsets.all(16.0),
+              alignment: Alignment.center,
+            ),
+            Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Form(key: _emailForm, child: emailForm())),
+            Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Form(key: _passwordForm, child: passwordForm())),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+            ),
+            Builder(builder: (BuildContext context) {
+              // Builder wrapper is necessary to use the SnackBar
+              return RaisedButton(
+                onPressed: () async {
+                  if (_emailForm.currentState.validate() &&
+                      _passwordForm.currentState.validate()) {
+                    _emailForm.currentState.save();
+                    _passwordForm.currentState.save();
+
+                    var success = _signInWithEmailAndPassword();
+
+                    success.then((value) {
+                      if (value) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute<void>(builder: (_) => HomePage()),
+                        );
+                      } else {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Sign in failed, try again"),
+                        ));
+                      }
+                    });
+                  }
+                },
+                child: const Text('Sign in'),
+              );
+            }),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+            ),
+            Divider(
+              thickness: 2,
+            ),
+            Container(
+              child: const Text('Register with email and password'),
+              padding: const EdgeInsets.all(16.0),
+            ),
+            RaisedButton(
+                child: const Text("Register"),
+                onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => RegisterPage()),
+                    )),
           ],
-        );
-      }),
-    );
+        )));
   }
-}
 
-
-class _EmailPasswordForm extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _EmailPasswordFormState();
-}
-
-class _EmailPasswordFormState extends State<_EmailPasswordForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _success;
-  String _userEmail;
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            child: const Text('Sign in with email and password'),
-            padding: const EdgeInsets.all(16),
-            alignment: Alignment.center,
-          ),
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'Email'),
-            validator: (String value) {
-              if (value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'Password'),
-            validator: (String value) {
-              if (value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            alignment: Alignment.center,
-            child: RaisedButton(
-              onPressed: () async {
-                if (_formKey.currentState.validate()) {
-                  _signInWithEmailAndPassword();
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              _success == null
-                  ? ''
-                  : (_success
-                  ? 'Successfully signed in ' + _userEmail
-                  : 'Sign in failed'),
-              style: TextStyle(color: Colors.red),
-            ),
-          )
-        ],
-      ),
+  Widget emailForm() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Email'),
+      keyboardType: TextInputType.emailAddress,
+      validator: (String value) {
+        if (!EmailValidator.validate(value)) {
+          return 'Enter a valid email.';
+        }
+        return null;
+      },
+      onSaved: (String val) {
+        _email = val;
+      },
     );
   }
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Widget passwordForm() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Password'),
+      keyboardType: TextInputType.visiblePassword,
+      obscureText: true,
+      validator: (String value) {
+        if (value.isEmpty || value.length < 6 || value.length > 40) {
+          return 'Enter a valid password (length between 6 and 40 characters)';
+        }
+        return null;
+      },
+      onSaved: (String val) {
+        _password = val;
+      },
+    );
   }
 
-  // Example code of how to sign in with email and password.
-  void _signInWithEmailAndPassword() async {
+  Future<bool> _signInWithEmailAndPassword() async {
     try {
       final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _email,
+        password: _password,
       ))
           .user;
       if (user != null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute<void>(builder: (_) => HomePage()),
-        );
-      }
+        return true;
+      } else
+        return false;
+    } catch (PlatformException) {
+      return false;
     }
-    catch (PlatformException) {
-      setState(() {
-        _success = false;
-      });
-    }
-  }
-}
-
-
-class _Register extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-        children: <Widget>[
-          Container(
-            child: const Text('Register with email and password'),
-            padding: const EdgeInsets.all(16),
-          ),
-          Container(
-            child: RaisedButton(
-                child: const Text("Register"),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => RegisterPage()),
-                )
-            ),
-          )
-        ]);
   }
 }
 
@@ -240,7 +221,3 @@ class _Register extends StatelessWidget {
 //    }
 //  }
 //}
-
-
-
-
