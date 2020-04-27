@@ -1,0 +1,30 @@
+\documentclass[a4paper,titlepage,12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref} % For linked TOC
+\hypersetup{
+    colorlinks=true, % make the links colored
+    linkcolor=black, % color TOC links in blue
+    linktoc=all % 'all' will create links for everything in the TOC 
+}
+\usepackage{microtype} % For improving words separation etc
+\usepackage{graphicx} % For pics
+\usepackage{float} % For pics' positioning
+\usepackage{caption}
+\usepackage{subfig}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{listings} 
+\pagestyle{headings} % For chapter name on top of every page 
+
+\begin{document}
+	\input{Docs/title}
+	\input{Docs/informationTable}
+	\tableofcontents
+	\input{Docs/introduction}
+	\input{Docs/ideaAndRequirements}
+	\input{Docs/implementationChoices}
+	\input{Docs/architecture}
+	\input{Docs/userInterface}
+	\input{Docs/externalServices}
+	\input{Docs/costEstimation}
+	\input{Docs/conclusions}
+\end{document}
