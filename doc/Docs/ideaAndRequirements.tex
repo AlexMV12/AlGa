@@ -1,3 +1,37 @@
 \chapter{Idea and Requirements}
 \label{chap:ideaAndRequirements}
-AlGa is a mobile application which helps users of electrical cars to find near recharge stations.
+\section{Product perspective}
+To better understand AlGa and its model, the following diagram is provided:
+\begin{figure}[H]
+%\includegraphics[width=\linewidth]{Pics/TrackMeUML}
+\caption{Use diagram of AlGa.}
+\end{figure}
+As we can see, AlGa is designed to help users directly on the road, in the fastest and easier way possible. Statistics useful for the users are another key part of the application: in fact, during the use, a set of useful metrics are collected and then displayed to the user. They can help her or him understand better the way in which they use their car, and fix some problems and/or wrong behaviors which may arise in the process of switching from a traditional car to an electric one. However, they are not strictly necessary to use the app; users can decide to opt-in to this functionality.
+		
+\section{Product functions}
+According to the goals of the project, a more detailed description of the various functionalities is here provided:
+
+\subsection*{Stations}
+This is the default screen. It shows a map, centered on user's position, together with the charging stations. The user can select every station to see its properties like cost, position, vendor, etc (Requirement 1). If the user decides to utilize that station, a simple click on the ``GO'' button will open the Google Maps application, with the destination already defined on that station (Requirement 3).
+Moreover, with a simple scroll menu, the user can also visualize a list of the nearest stations, with the possibility to order them by price, distance and speed and vendor (Requirement 2).
+
+\subsection*{Stats}
+The statistics screen provides the user with data about the use of their car and of the application. That is, the amount of time spent at charging stations, the amount of money spent in energy, the distance traveled and other aggregate information (Requirement 4). Leveraging the possibilities offered by sensors installed on every smartphone, AlGa can collect these statistics in an effortless way for the user.
+
+\subsection*{Profile}
+The profile screen lets the user customize their account on AlGa. They can choose a simple username, change their e-mail and password, and select their electric car. AlGa offers a list of cars from which the user can choose; every car has some statistics about the consumption, the autonomy etc. This leads to more accurate usage data (Requirement 5).
+
+\section{User characteristics}
+\begin{description}
+\item[AlGa User:] An individual who has downloaded AlGa.
+\item[Registered User:] An AlGa User who has created an account on AlGa platform.
+\item[Vendor:] A company which offers electric recharging stations.
+\end{description}
+
+\section{Assumptions, dependencies and constraints}
+\subsection*{Domain assumptions}
+\begin{description}
+    \item[{[D1]}] Users can be identified through a couple email/password, unique for every user.
+    \item[{[D2]}] Users’ devices can provide precise and correct data on location.
+\end{description}
+

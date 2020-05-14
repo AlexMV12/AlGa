@@ -73,8 +73,8 @@ class ProfileState extends State<Profile> {
                     ],
                   ));
             } else
-              return SingleChildScrollView(
-                  child: Column(
+              return SingleChildScrollView(Column(
+                  child:
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(

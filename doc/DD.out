@@ -1,8 +1,17 @@
 \BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
-\BOOKMARK [0][-]{chapter.2}{Idea and Requirements}{}% 2
-\BOOKMARK [0][-]{chapter.3}{Implementation choices}{}% 3
-\BOOKMARK [0][-]{chapter.4}{Architecture}{}% 4
-\BOOKMARK [0][-]{chapter.5}{User Interface}{}% 5
-\BOOKMARK [0][-]{chapter.6}{External services}{}% 6
-\BOOKMARK [0][-]{chapter.7}{Cost estimation}{}% 7
-\BOOKMARK [0][-]{chapter.8}{Conclusions}{}% 8
+\BOOKMARK [1][-]{section.1.1}{Purpose}{chapter.1}% 2
+\BOOKMARK [2][-]{subsection.1.1.1}{Goals}{section.1.1}% 3
+\BOOKMARK [1][-]{section.1.2}{Scope}{chapter.1}% 4
+\BOOKMARK [1][-]{section.1.3}{Definitions, Acronyms, Abbreviations}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.4}{Document Structure}{chapter.1}% 6
+\BOOKMARK [0][-]{chapter.2}{Idea and Requirements}{}% 7
+\BOOKMARK [1][-]{section.2.1}{Product perspective}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.2}{Product functions}{chapter.2}% 9
+\BOOKMARK [1][-]{section.2.3}{User characteristics}{chapter.2}% 10
+\BOOKMARK [1][-]{section.2.4}{Assumptions, dependencies and constraints}{chapter.2}% 11
+\BOOKMARK [0][-]{chapter.3}{Implementation choices}{}% 12
+\BOOKMARK [0][-]{chapter.4}{Architecture}{}% 13
+\BOOKMARK [0][-]{chapter.5}{User Interface}{}% 14
+\BOOKMARK [0][-]{chapter.6}{External services}{}% 15
+\BOOKMARK [0][-]{chapter.7}{Cost estimation}{}% 16
+\BOOKMARK [0][-]{chapter.8}{Conclusions}{}% 17

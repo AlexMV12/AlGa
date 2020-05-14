@@ -1,7 +1,56 @@
 \chapter{Introduction}
-\label{chap:introduction}
-The goal of this document is to collect and explain the choices, possibilities and motivations of the mobile application AlGa, developed by Alessandro Falcetta and Gabriele Guelfi.
+\section{Purpose}
+The aim of the present document is to describe the AlGa application with its services, a deeply definition of the main assumptions, the goals and a list of requirements, and the proposed solution. The definition of use cases and the scenarios will provide to highlight the features that the software has to offer to the customers and to better specify the boundaries system.
 
 AlGa is an Android application developed within the course of \textit{Design and Implementation of Mobile Applications} ad Politecnico di Milano, Italy. The goal of this course is to design a ``mobile''applications by considering both the problem of designing the user experience, that is, the screens used to interact with the user, and the problem of understanding the actual distribution of the components that constitute the application and their interactions.
 
+AlGa provides electric cars' owners with a simple way to find and use nearby charging stations. The main goal of our application is to help electric cars owner in the entire process of recharging their car. Being able to find charging stations tailored to everybody's needs is the key to meet that goal.
+\subsection{Goals}
+\begin{description} 
+    \item[{[G1]}] The application should provide the user with a \textbf{clear} overview of the nearest charging stations and their vendor.
+    \item[{[G2]}] The application should offer the user the possibility to order them, in a list, according to specific criteria: price, charging speed, distance, vendor.
+    \item[{[G3]}]  The application should make it easy and straightforward to start the navigation toward any charging station.
+    \item[{[G4]}] Users should be able to check their statistics about time spent charging their car, the total amount of money spent, etc. with the minimum interaction required; statistics can be enriched if the user indicate their owned car
+    \item[{[G5]}] The application should provide an easy way to save the profile of the user, with the possibility to log-in, log-out, delete the account and change personal information like e-mail and the owned car.
+\end{description}
+
+\section{Scope}
+Electric cars are one of the most interesting technologies of the last years, with a possible bright future. Nonetheless, the public is still reluctant to invest money into this kind of products because of many concerns about the autonomy and the charging system.
+With respect to thermic engines cars, electric cars require more time to be recharged, have less autonomy in terms of distance and the infrastructure of recharging stations is yet to be completed.This is the context in which applications like AlGa can improve the experience of electric cars owners.
+
+An easy and adaptive way find the best charging stations, according to everybody's needs, can be an important boost to the confidence in this technology. 
+
+        
+\section{Definitions, Acronyms, Abbreviations}
+\subsection*{Definitions}
+\begin{itemize}
+    \item \textbf{Health data:} some vital parameters of the users, for example heartbeat and blood pressure
+    \item \textbf{Runner:} athlete who participate in a run
+    \item \textbf{Fiscal code:} a code used in Italy that uniquely identifies every citizen
+    \item \textbf{Third party:} a usr like an organization that is allowed to request health data
+    \item \textbf{Individual request:} request of data of a single user 
+    \item \textbf{Group request:} request of data of a group of users, based on some parameters 
+    \item \textbf{118:} Emergency Medical Service, it's the number to call an ambulance
+    \item \textbf{112:} Public-safety Answering Point
+\end{itemize}
+\subsection*{Acronyms}
+\begin{itemize}
+    \item \textbf{RASD:} Requirement Analysis and Specification Document
+    \item \textbf{API:} Application Programming Interfaces
+    \item \textbf{GPS:} Global Positioning System
+    \item \textbf{HTTP:} HyperText Transfer Protocol
+    \item \textbf{TLS:} Transport Layer Security
+    \item \textbf{OS:} Operating System
+    \item \textbf{SQL:} Structured Query Language
+\end{itemize}
+\subsection*{Abbreviations}
+\begin{itemize}
+    \item \textbf{{[Gn]}}: n-th goal
+    \item \textbf{{[Dn]}}: n-th domain assumption
+    \item \textbf{{[Rn]}}: n-th functional requirement
+\end{itemize}
+
+\section{Document Structure}
+This design document is composed by 6 chapter:
 The document is organized as follows: Chapter~\ref{chap:ideaAndRequirements} states what the app is about and which are the requirement is must satisfy. Chapter~\ref{chap:implementationChoices} explains the reasons behind the choice of the used technologies. Chapter~\ref{chap:architecture} details the architectural choices for the entire application, while Chapter~\ref{chap:userInterface} gives an overview on the application from the point of view of the user, including some screenshots and mock-ups. Chapter~\ref{chap:externalServices} explains the use of external APIs, while some business-driven considerations are proposed in Chapter~\ref{chap:costEstimation}. Conclusions are finally drawn in Chapter~\ref{chap:conclusions}.
+
