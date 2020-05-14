@@ -286,7 +286,7 @@ class _Gmaps extends State<Gmaps> {
   Text slide() {
       if (_pc.isAttached) {
         if(_pc.isPanelClosed) {
-          return Text("chiuso", style: TextStyle(color: Colors.black));
+          return Text("^", style: TextStyle(color: Colors.black));
         }
         else {
           return Text("aperto", style: TextStyle(color: Colors.black));
