@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_page.dart';
+import 'car.dart';
 import 'package:email_validator/email_validator.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -23,7 +24,7 @@ class RegisterPageState extends State<RegisterPage> {
   var _newEmail;
   var _newPassword;
 
-  List<String> _cars = [];
+  List<Car> _cars = [];
   var _isDataReady;
 
   @override
@@ -185,7 +186,8 @@ class RegisterPageState extends State<RegisterPage> {
 
   Widget newCarForm() {
     return Row(children: <Widget>[
-      Expanded(child: DropdownButtonFormField<String>(
+      Expanded(
+          child: DropdownButtonFormField<String>(
         isExpanded: true,
         hint: Text("Select your car"),
         value: _newCar,
@@ -195,7 +197,9 @@ class RegisterPageState extends State<RegisterPage> {
           });
         },
         validator: (value) => value == null ? 'Enter a valid car!' : null,
-        items: _cars.map<DropdownMenuItem<String>>((String value) {
+        items: _cars
+            .map((e) => e.name)
+            .map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(value),
@@ -209,13 +213,16 @@ class RegisterPageState extends State<RegisterPage> {
     // Try to fetch the list of available cars. Return false in case of errors,
     // true otherwise.
     if (_cars.length == 0) {
-      await Firestore.instance
-          .collection("cars")
-          .getDocuments()
-          .then((snapshot) {
-        for (var car in snapshot.documents) {
-          _cars.add(car["name"]);
-        }
+      final QuerySnapshot result =
+          await Firestore.instance.collection('cars').getDocuments();
+      final List<DocumentSnapshot> documents = result.documents;
+      documents.forEach((data) {
+        // Can't use data["range"] and data["battery"] directly
+        // it hangs up
+        // flutter firebase bug?
+        var range = double.parse(data["range"].toString());
+        var battery = double.parse(data["battery"].toString());
+        _cars.add(Car(data["name"], range, battery));
       });
     }
     if (_cars.isEmpty)
@@ -225,9 +232,12 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   void createRecord(var _userUid, var _name, var _car) async {
+    Car newCar = _cars.where((element) => element.name == _newCar).first;
     await Firestore.instance.collection("users").document(_userUid).setData({
       'name': _name,
       'car': _car,
+      'car_range': newCar.range,
+      'car_battery': newCar.battery
     });
   }
 

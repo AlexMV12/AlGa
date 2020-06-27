@@ -1,5 +1,6 @@
 \documentclass[a4paper,titlepage,12pt]{report}
 \usepackage[utf8]{inputenc}
+\usepackage{lmodern,textcomp}
 \usepackage{hyperref} % For linked TOC
 \hypersetup{
     colorlinks=true, % make the links colored
@@ -13,6 +14,8 @@
 \usepackage{subfig}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings} 
+\usepackage{tabularx}
+\usepackage{booktabs}
 \pagestyle{headings} % For chapter name on top of every page 
 
 \begin{document}
@@ -21,8 +24,8 @@
 	\tableofcontents
 	\input{Docs/introduction}
 	\input{Docs/ideaAndRequirements}
-	\input{Docs/implementationChoices}
 	\input{Docs/architecture}
+	\input{Docs/implementationChoices}
 	\input{Docs/userInterface}
 	\input{Docs/externalServices}
 	\input{Docs/costEstimation}

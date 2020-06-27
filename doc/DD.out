@@ -9,9 +9,10 @@
 \BOOKMARK [1][-]{section.2.2}{Product functions}{chapter.2}% 9
 \BOOKMARK [1][-]{section.2.3}{User characteristics}{chapter.2}% 10
 \BOOKMARK [1][-]{section.2.4}{Assumptions, dependencies and constraints}{chapter.2}% 11
-\BOOKMARK [0][-]{chapter.3}{Implementation choices}{}% 12
-\BOOKMARK [0][-]{chapter.4}{Architecture}{}% 13
-\BOOKMARK [0][-]{chapter.5}{User Interface}{}% 14
-\BOOKMARK [0][-]{chapter.6}{External services}{}% 15
-\BOOKMARK [0][-]{chapter.7}{Cost estimation}{}% 16
-\BOOKMARK [0][-]{chapter.8}{Conclusions}{}% 17
+\BOOKMARK [0][-]{chapter.3}{Architecture}{}% 12
+\BOOKMARK [1][-]{section.3.1}{Use case diagrams}{chapter.3}% 13
+\BOOKMARK [0][-]{chapter.4}{Implementation choices}{}% 14
+\BOOKMARK [0][-]{chapter.5}{User Interface}{}% 15
+\BOOKMARK [0][-]{chapter.6}{External services}{}% 16
+\BOOKMARK [0][-]{chapter.7}{Cost estimation}{}% 17
+\BOOKMARK [0][-]{chapter.8}{Conclusions}{}% 18

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'car.dart';
 import 'package:AlGa/signin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,20 +22,26 @@ class ProfileState extends State<Profile> {
   final GlobalKey<FormState> _newEmailForm = GlobalKey<FormState>();
   final GlobalKey<FormState> _currPasswordForm = GlobalKey<FormState>();
   final GlobalKey<FormState> _newPasswordForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _newUserCarBatteryForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _newUserCarRangeForm = GlobalKey<FormState>();
 
   var _newName;
   var _newCar;
   var _newEmail;
   var _currPassword;
   var _newPassword;
+  var _newUserCarBattery;
+  var _newUserCarRange;
 
   var _userUid;
   var _userEmail;
   var _profileImageUrl;
   var _name;
   var _car;
+  var _userCarBattery = 0.0;
+  var _userCarRange = 0.0;
 
-  List<String> _cars = [];
+  List<Car> _cars = [];
   Future<bool> _isDataReady;
 
   @override
@@ -75,42 +82,126 @@ class ProfileState extends State<Profile> {
             } else
               return SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    height: 20,
+                  ),
+                  avatar(),
+                  IconButton(
+                    icon: Icon(Icons.photo_camera),
+                    tooltip: 'Upload new profile pic',
+                    onPressed: () => (updateProfilePic()),
+                  ),
+                  Divider(),
+                  Row(
                     children: <Widget>[
-                      SizedBox(
-                        height: 20,
+                      SizedBox(width: 30),
+                      Icon(
+                        Icons.account_box,
+                        size: 30,
                       ),
-                      avatar(),
-                      IconButton(
-                        icon: Icon(Icons.photo_camera),
-                        tooltip: 'Upload new profile pic',
-                        onPressed: () => (updateProfilePic()),
-                      ),
-                      Divider(),
-                      Row(
+                      SizedBox(width: 30),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          SizedBox(width: 30),
-                          Icon(
-                            Icons.account_box,
-                            size: 30,
+                          Text(
+                            "Name",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(color: Colors.grey),
                           ),
-                          SizedBox(width: 30),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Name",
-                                textAlign: TextAlign.right,
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              Text(
-                                _name,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontSize: 19),
-                              ),
-                            ],
+                          Text(
+                            _name,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(fontSize: 19),
                           ),
-                          Spacer(),
+                        ],
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Form(
+                                    key: _newNameForm,
+                                    child: newNameForm(),
+                                  ),
+                                  actions: <Widget>[
+                                    IconButton(
+                                      icon: Icon(Icons.check),
+                                      onPressed: () {
+                                        if (_newNameForm.currentState
+                                            .validate()) {
+                                          _newNameForm.currentState.save();
+                                          updateName();
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                    )
+                                  ],
+                                );
+                              })
+                        },
+                      ),
+                      SizedBox(width: 30),
+                    ],
+                  ),
+                  Divider(),
+                  Row(children: <Widget>[
+                    SizedBox(width: 30),
+                    Icon(
+                      Icons.directions_car,
+                      size: 30,
+                    ),
+                    SizedBox(width: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "Car",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        new SizedBox(
+                            // This solution is needed to give a
+                            // fixed width to the box which will contain the
+                            // selector.
+                            width: MediaQuery.of(context).size.width - 130,
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              value: _car,
+                              underline: Container(
+                                height: 1,
+                                color: Colors.transparent,
+                              ),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _newCar = newValue;
+                                  updateCar();
+                                });
+                              },
+                              items: _cars
+                                  .map((e) => e.name)
+                                  .map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                return DropdownMenuItem<String>(
+                                    value: value, child: Text(value));
+                              }).toList(),
+                            )),
+                        Text(
+                          "Battery (kWh)",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        Row(children: <Widget>[
+                          Text(
+                            _userCarBattery.toString(),
+                            textAlign: TextAlign.left,
+                            style: TextStyle(fontSize: 19),
+                          ),
                           IconButton(
                             icon: Icon(Icons.edit),
                             onPressed: () => {
@@ -119,17 +210,20 @@ class ProfileState extends State<Profile> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       content: Form(
-                                        key: _newNameForm,
-                                        child: newNameForm(),
+                                        key: _newUserCarBatteryForm,
+                                        child: newUserCarBatteryForm(),
                                       ),
                                       actions: <Widget>[
                                         IconButton(
                                           icon: Icon(Icons.check),
                                           onPressed: () {
-                                            if (_newNameForm.currentState
+                                            if (_newUserCarBatteryForm
+                                                .currentState
                                                 .validate()) {
-                                              _newNameForm.currentState.save();
-                                              updateName();
+                                              _newUserCarBatteryForm
+                                                  .currentState
+                                                  .save();
+                                              updateUserCarBattery();
                                               Navigator.pop(context);
                                             }
                                           },
@@ -139,187 +233,190 @@ class ProfileState extends State<Profile> {
                                   })
                             },
                           ),
-                          SizedBox(width: 30),
-                        ],
-                      ),
-                      Divider(),
-                      Row(children: <Widget>[
-//                  SizedBox(width: 50),
-                        SizedBox(width: 30),
-                        Icon(
-                          Icons.directions_car,
-                          size: 30,
+                        ]),
+                        Text(
+                          "Range (Km)",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(color: Colors.grey),
                         ),
-                        SizedBox(width: 30),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "Car",
-                              textAlign: TextAlign.right,
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            DropdownButton<String>(
-//                                isExpanded: true,
-                              value: _car,
-                              onChanged: (String newValue) {
-                                setState(() {
-                                  _newCar = newValue;
-                                  updateCar();
-                                });
-                              },
-                              items: _cars
-                                  .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: FittedBox(
-                                      child: Text(value,
-                                          overflow: TextOverflow.ellipsis),
-                                      fit: BoxFit.contain),
-                                );
-                              }).toList(),
-                            ),
-                          ],
-                        ),
-                        Spacer()
-                      ]),
-                      Divider(),
-                      Row(children: <Widget>[
-                        SizedBox(width: 30),
-                        Icon(
-                          Icons.email,
-                          size: 30,
-                        ),
-                        SizedBox(width: 30),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "E-Mail",
-                              textAlign: TextAlign.right,
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            Text(
-                              _userEmail,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(fontSize: 17),
-                            ),
-                          ],
-                        ),
-                        Spacer(),
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () => {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: new SingleChildScrollView(
-                                        child: new Form(
-                                            key: _newEmailForm,
-                                            child: Column(children: <Widget>[
-                                              Text(
-                                                  "To perform this action, you have to provide also your password."),
-                                              currPasswordForm(),
-                                              newEmailForm()
-                                            ]))),
-                                    actions: <Widget>[
-                                      IconButton(
+                        Row(children: <Widget>[
+                          Text(
+                            _userCarRange.toString(),
+                            textAlign: TextAlign.left,
+                            style: TextStyle(fontSize: 19),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () => {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      content: Form(
+                                        key: _newUserCarRangeForm,
+                                        child: newUserCarRangeForm(),
+                                      ),
+                                      actions: <Widget>[
+                                        IconButton(
                                           icon: Icon(Icons.check),
                                           onPressed: () {
-                                            if (_newEmailForm.currentState
+                                            if (_newUserCarRangeForm
+                                                .currentState
                                                 .validate()) {
-                                              _newEmailForm.currentState.save();
-                                              updateEmail();
+                                              _newUserCarRangeForm.currentState
+                                                  .save();
+                                              updateUserCarRange();
                                               Navigator.pop(context);
                                             }
-                                          })
-                                    ],
-                                  );
-                                })
-                          },
+                                          },
+                                        )
+                                      ],
+                                    );
+                                  })
+                            },
+                          ),
+                        ]),
+                      ],
+                    ),
+                    SizedBox(width: 30)
+                  ]),
+                  Divider(),
+                  Row(children: <Widget>[
+                    SizedBox(width: 30),
+                    Icon(
+                      Icons.email,
+                      size: 30,
+                    ),
+                    SizedBox(width: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "E-Mail",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(color: Colors.grey),
                         ),
-                        SizedBox(width: 30)
-                      ]),
-                      Divider(),
-                      FlatButton(
-                        color: Colors.red,
-                        textColor: Colors.white,
-                        padding: EdgeInsets.all(8.0),
-                        splashColor: Colors.blueAccent,
-                        onPressed: () => {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: new SingleChildScrollView(
-                                      child: new Form(
-                                          key: _newPasswordForm,
-                                          child: Column(children: <Widget>[
-                                            Text(
-                                                "Enter both your old and your new password."),
-                                            currPasswordForm(),
-                                            newPasswordForm()
-                                          ]))),
-                                  actions: <Widget>[
-                                    IconButton(
-                                        icon: Icon(Icons.check),
-                                        onPressed: () {
-                                          if (_newPasswordForm.currentState
-                                              .validate()) {
-                                            _newPasswordForm.currentState.save();
-                                            updatePassword();
-                                            Navigator.pop(context);
-                                          }
-                                        })
-                                  ],
-                                );
-                              })
-                        },
-                        child: Text(
-                          "Edit Password",
-                          style: TextStyle(fontSize: 15.0),
+                        Text(
+                          _userEmail,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontSize: 17),
                         ),
-                      ),
-                      FlatButton(
-                        color: Colors.red,
-                        textColor: Colors.white,
-                        padding: EdgeInsets.all(8.0),
-                        splashColor: Colors.blueAccent,
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: new SingleChildScrollView(
-                                      child: new Form(
-                                          key: _currPasswordForm,
-                                          child: Column(children: <Widget>[
-                                            Text("Enter your password."),
-                                            currPasswordForm(),
-                                          ]))),
-                                  actions: <Widget>[
-                                    IconButton(
-                                        icon: Icon(Icons.check),
-                                        onPressed: () {
-                                          if (_currPasswordForm.currentState
-                                              .validate()) {
-                                            _currPasswordForm.currentState.save();
-                                            Navigator.pop(context);
-                                            deleteUser();
-                                          }
-                                        })
-                                  ],
-                                );
-                              });
-                        },
-                        child: Text(
-                          "Delete account",
-                          style: TextStyle(fontSize: 15.0),
-                        ),
-                      ),
-                    ],
-                  ));
+                      ],
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () => {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: new SingleChildScrollView(
+                                    child: new Form(
+                                        key: _newEmailForm,
+                                        child: Column(children: <Widget>[
+                                          Text(
+                                              "To perform this action, you have to provide also your password."),
+                                          currPasswordForm(),
+                                          newEmailForm()
+                                        ]))),
+                                actions: <Widget>[
+                                  IconButton(
+                                      icon: Icon(Icons.check),
+                                      onPressed: () {
+                                        if (_newEmailForm.currentState
+                                            .validate()) {
+                                          _newEmailForm.currentState.save();
+                                          updateEmail();
+                                          Navigator.pop(context);
+                                        }
+                                      })
+                                ],
+                              );
+                            })
+                      },
+                    ),
+                    SizedBox(width: 30)
+                  ]),
+                  Divider(),
+                  FlatButton(
+                    color: Colors.red,
+                    textColor: Colors.white,
+                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.blueAccent,
+                    onPressed: () => {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: new SingleChildScrollView(
+                                  child: new Form(
+                                      key: _newPasswordForm,
+                                      child: Column(children: <Widget>[
+                                        Text(
+                                            "Enter both your old and your new password."),
+                                        currPasswordForm(),
+                                        newPasswordForm()
+                                      ]))),
+                              actions: <Widget>[
+                                IconButton(
+                                    icon: Icon(Icons.check),
+                                    onPressed: () {
+                                      if (_newPasswordForm.currentState
+                                          .validate()) {
+                                        _newPasswordForm.currentState.save();
+                                        updatePassword();
+                                        Navigator.pop(context);
+                                      }
+                                    })
+                              ],
+                            );
+                          })
+                    },
+                    child: Text(
+                      "Edit Password",
+                      style: TextStyle(fontSize: 15.0),
+                    ),
+                  ),
+                  FlatButton(
+                    color: Colors.red,
+                    textColor: Colors.white,
+                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.blueAccent,
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: new SingleChildScrollView(
+                                  child: new Form(
+                                      key: _currPasswordForm,
+                                      child: Column(children: <Widget>[
+                                        Text("Enter your password."),
+                                        currPasswordForm(),
+                                      ]))),
+                              actions: <Widget>[
+                                IconButton(
+                                    icon: Icon(Icons.check),
+                                    onPressed: () {
+                                      if (_currPasswordForm.currentState
+                                          .validate()) {
+                                        _currPasswordForm.currentState.save();
+                                        Navigator.pop(context);
+                                        deleteUser();
+                                      }
+                                    })
+                              ],
+                            );
+                          });
+                    },
+                    child: Text(
+                      "Delete account",
+                      style: TextStyle(fontSize: 15.0),
+                    ),
+                  ),
+                ],
+              ));
           }
         });
   }
@@ -355,17 +452,38 @@ class ProfileState extends State<Profile> {
     );
   }
 
-  Widget newCarForm() {
+  Widget newUserCarBatteryForm() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Car'),
-      validator: (String value) {
-        if (value.isEmpty || value.length < 2 || value.length > 15) {
-          return 'Your car should have between 2\nand 15 characters.';
+      decoration: const InputDecoration(labelText: 'Battery'),
+      keyboardType: TextInputType.number,
+      validator: (value) {
+        var parsedValue = double.parse(value);
+        if (parsedValue < 0 || parsedValue > 300) {
+          return 'Battery should be a value\nbetween 0 and 300';
         }
         return null;
       },
-      onSaved: (String val) {
-        _newCar = val;
+      onSaved: (String value) {
+        var parsedValue = double.parse(value);
+        _newUserCarBattery = parsedValue;
+      },
+    );
+  }
+
+  Widget newUserCarRangeForm() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Range'),
+      keyboardType: TextInputType.number,
+      validator: (value) {
+        var parsedValue = double.parse(value);
+        if (parsedValue < 0 || parsedValue > 1000) {
+          return 'Range should be a value\nbetween 0 and 1000';
+        }
+        return null;
+      },
+      onSaved: (String value) {
+        var parsedValue = double.parse(value);
+        _newUserCarRange = parsedValue;
       },
     );
   }
@@ -446,6 +564,8 @@ class ProfileState extends State<Profile> {
         .then((DocumentSnapshot ds) {
       _name = ds["name"];
       _car = ds["car"];
+      _userCarRange = ds["car_range"];
+      _userCarBattery = ds["car_battery"];
     });
 //    await FirebaseStorage.instance
 //        .ref()
@@ -458,7 +578,7 @@ class ProfileState extends State<Profile> {
 //        });
     try {
       var profilePicLocation =
-      FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
+          FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
       _profileImageUrl = await profilePicLocation.getDownloadURL();
     } catch (_) {
       _profileImageUrl = "none";
@@ -467,15 +587,19 @@ class ProfileState extends State<Profile> {
     // If an exception is been thrown in the console here, see
     // https://github.com/FirebaseExtended/flutterfire/issues/792
 
-    if (_cars.length == 0)
-      await Firestore.instance
-          .collection("cars")
-          .getDocuments()
-          .then((snapshot) {
-        for (var car in snapshot.documents) {
-          _cars.add(car["name"]);
-        }
+    if (_cars.length == 0) {
+      final QuerySnapshot result =
+          await Firestore.instance.collection('cars').getDocuments();
+      final List<DocumentSnapshot> documents = result.documents;
+      documents.forEach((data) {
+        // Can't use data["range"] and data["battery"] directly
+        // it hangs up
+        // flutter firebase bug?
+        var range = double.parse(data["range"].toString());
+        var battery = double.parse(data["battery"].toString());
+        _cars.add(Car(data["name"], range, battery));
       });
+    }
 
     if (_cars.isEmpty || _name == null || _car == null) {
       return false;
@@ -494,7 +618,7 @@ class ProfileState extends State<Profile> {
 
     if (_image != null) {
       StorageReference storageReference =
-      FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
+          FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
       StorageUploadTask uploadTask = storageReference.putFile(_image);
       await uploadTask.onComplete
           .catchError((err) => print("Image not uploaded"));
@@ -531,10 +655,13 @@ class ProfileState extends State<Profile> {
   }
 
   updateCar() async {
+    Car newCar = _cars.where((element) => element.name == _newCar).first;
     var user = await _auth.currentUser();
     _userUid = user.uid;
     await Firestore.instance.collection("users").document(_userUid).updateData({
-      'car': _newCar,
+      'car': newCar.name,
+      'car_battery': newCar.battery,
+      'car_range': newCar.range
     }).catchError((err) {
       print(err);
       Scaffold.of(context).showSnackBar(SnackBar(
@@ -548,6 +675,48 @@ class ProfileState extends State<Profile> {
     });
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text("Car updated!"),
+    ));
+  }
+
+  updateUserCarBattery() async {
+    var user = await _auth.currentUser();
+    _userUid = user.uid;
+    await Firestore.instance.collection("users").document(_userUid).updateData({
+      'car_battery': _newUserCarBattery,
+    }).catchError((err) {
+      print(err);
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Error: Battery not updated!"),
+      ));
+      return;
+    });
+
+    setState(() {
+      _isDataReady = getData();
+    });
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text("Battery updated!"),
+    ));
+  }
+
+  updateUserCarRange() async {
+    var user = await _auth.currentUser();
+    _userUid = user.uid;
+    await Firestore.instance.collection("users").document(_userUid).updateData({
+      'car_range': _newUserCarRange,
+    }).catchError((err) {
+      print(err);
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Error: Car range not updated!"),
+      ));
+      return;
+    });
+
+    setState(() {
+      _isDataReady = getData();
+    });
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text("Car range updated!"),
     ));
   }
 
@@ -608,7 +777,7 @@ class ProfileState extends State<Profile> {
       await Firestore.instance.collection("users").document(_userUid).delete();
 
       var profilePicLocation =
-      FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
+          FirebaseStorage.instance.ref().child("users_profilepics/" + _userUid);
 
       try {
         await profilePicLocation.delete();
