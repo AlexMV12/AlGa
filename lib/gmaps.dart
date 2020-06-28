@@ -70,9 +70,21 @@ class _Gmaps extends State<Gmaps> {
                       topRight: Radius.circular(15.0),
                     ),
                     color: Colors.blue),
-                    height: 20,
+                    height: 30,
                     alignment: Alignment(0, 0),
-                    child: Icon(Icons.keyboard_arrow_up),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: 70,
+                          height: 5,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(12.0))
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Container(
                       color: Colors.blue,
