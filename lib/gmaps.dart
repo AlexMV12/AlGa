@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math';
 
+import 'package:AlGa/recharge_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -137,6 +138,7 @@ class _Gmaps extends State<Gmaps> {
                                   onPressed: () {
                                     _launchMapsUrl(temp[index].pos.latitude,
                                         temp[index].pos.longitude);
+                                    RechargeManager.startRechargeMonitor(temp[index]);
                                   },
                                   child: Text(
                                     "GO",
@@ -174,6 +176,7 @@ class _Gmaps extends State<Gmaps> {
                                   onPressed: () {
                                     _launchMapsUrl(temp[index].pos.latitude,
                                         temp[index].pos.longitude);
+                                    RechargeManager.startRechargeMonitor(temp[index]);
                                   },
                                   child: Text(
                                     "GO",
@@ -211,6 +214,7 @@ class _Gmaps extends State<Gmaps> {
                                   onPressed: () {
                                     _launchMapsUrl(temp[index].pos.latitude,
                                         temp[index].pos.longitude);
+                                    RechargeManager.startRechargeMonitor(temp[index]);
                                   },
                                   child: Text(
                                     "GO",
@@ -292,6 +296,7 @@ class _Gmaps extends State<Gmaps> {
                             _launchMapsUrl(
                                 currentlySelectedStation.pos.latitude,
                                 currentlySelectedStation.pos.longitude);
+                            RechargeManager.startRechargeMonitor(currentlySelectedStation);
                           },
                           child: Text(
                             "GO",
@@ -302,23 +307,7 @@ class _Gmaps extends State<Gmaps> {
     ]);
   }
 
-  double calculateDistance(double initialLat, double initialLong,
-      double finalLat, double finalLong) {
-    int R = 6371;
-    double dLat = toRadians(finalLat - initialLat);
-    double dLon = toRadians(finalLong - initialLong);
-    initialLat = toRadians(initialLat);
-    finalLat = toRadians(finalLat);
 
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        sin(dLon / 2) * sin(dLon / 2) * cos(initialLat) * cos(finalLat);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    return R * c;
-  }
-
-  double toRadians(double deg) {
-    return deg * pi / 180.0;
-  }
 
   void _onMapCreated(GoogleMapController controller) async {
     _mapController.complete(controller);
@@ -408,3 +397,20 @@ class _Gmaps extends State<Gmaps> {
     )));
   }
 }
+double calculateDistance(double initialLat, double initialLong,
+      double finalLat, double finalLong) {
+    int R = 6371;
+    double dLat = toRadians(finalLat - initialLat);
+    double dLon = toRadians(finalLong - initialLong);
+    initialLat = toRadians(initialLat);
+    finalLat = toRadians(finalLat);
+
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        sin(dLon / 2) * sin(dLon / 2) * cos(initialLat) * cos(finalLat);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return R * c;
+  }
+
+  double toRadians(double deg) {
+    return deg * pi / 180.0;
+  }
