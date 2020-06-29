@@ -23,10 +23,11 @@ class RechargeManager extends StatelessWidget {
   static ChargingStations selectedStation;
   final GlobalKey<FormState> _currentBatteryForm = GlobalKey<FormState>();
 
-  var _currentBatteryPercentage;
-
   @override
   Widget build(BuildContext context) {
+
+    var _currentBatteryPercentage;
+
     return Scaffold(
         appBar: AppBar(
           title: Text("AlGa"),
@@ -150,6 +151,16 @@ Future _showNotificationChargeCompleted(
       estimatedEnd,
       platformChannelSpecifics);
 
+  await Firestore.instance
+      .collection("recharges")
+      .document(user.uid)
+      .collection("0")
+      .document()
+      .setData({
+        'timestamp': estimatedEnd,
+        'cash_spent': double.parse(((_userCarBattery * (1 - currentBatteryPercentage)) * station.price).toStringAsFixed(2)),
+        'kw_recharged': double.parse((_userCarBattery * (1 - currentBatteryPercentage)).toStringAsFixed(2))
+  });
 }
 
 Future _showNotificationStationReached() async {

@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           physics: new NeverScrollableScrollPhysics(),
           children: <Widget>[
-            GeolocationExample(),
+            StatsPage(),
             Gmaps(),
             Profile()
           ],
