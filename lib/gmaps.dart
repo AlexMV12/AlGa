@@ -19,17 +19,29 @@ class Gmaps extends StatefulWidget {
   _Gmaps createState() => _Gmaps();
 }
 
-class _Gmaps extends State<Gmaps> {
+class _Gmaps extends State<Gmaps> with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    /* This is triggered when the user comes back to AlGa. For example, the user
+       launches a navigation toward a station, but then she changes her mind.
+       With this, we prevent the "tracking location" notification to be displayed
+       when not needed.
+    */
+    if (state == AppLifecycleState.resumed)
+      RechargeManager.stopLocationService();
+  }
+
   Completer<GoogleMapController> _mapController = Completer();
   Set<Marker> _markers = {};
-  BitmapDescriptor stationIcon;
+  BitmapDescriptor greenStationIcon;
+  BitmapDescriptor redStationIcon;
   List<ChargingStations> stations = new List();
   Position currPos = Position(latitude: 45.4642, longitude: 9.19);
 
   double pinPillPosition = -100;
 
   ChargingStations currentlySelectedStation =
-      new ChargingStations(new GeoPoint(0, 0), 0, 0);
+      new ChargingStations(new GeoPoint(0, 0), 0, 0, true);
 
   final LatLng _center = const LatLng(45.4642, 9.1900);
 
@@ -38,9 +50,16 @@ class _Gmaps extends State<Gmaps> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     setState(() {
       if (_pc.isAttached) _pc.isPanelClosed;
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -66,11 +85,11 @@ class _Gmaps extends State<Gmaps> {
                 child: Column(children: <Widget>[
                   Container(
                     decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15.0),
-                      topRight: Radius.circular(15.0),
-                    ),
-                    color: Colors.blue),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(15.0),
+                          topRight: Radius.circular(15.0),
+                        ),
+                        color: Colors.blue),
                     height: 30,
                     alignment: Alignment(0, 0),
                     child: Row(
@@ -81,8 +100,8 @@ class _Gmaps extends State<Gmaps> {
                           height: 5,
                           decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(12.0))
-                          ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12.0))),
                         ),
                       ],
                     ),
@@ -93,16 +112,16 @@ class _Gmaps extends State<Gmaps> {
                         tabs: <Widget>[
                           Tab(
                               icon: Icon(Icons.euro_symbol),
-                              child: Text("order by\nprice", textAlign: TextAlign.center)
-                          ),
+                              child: Text("order by\nprice",
+                                  textAlign: TextAlign.center)),
                           Tab(
                               icon: Icon(Icons.shutter_speed),
-                              child: Text("order by\nspeed", textAlign: TextAlign.center)
-                          ),
+                              child: Text("order by\nspeed",
+                                  textAlign: TextAlign.center)),
                           Tab(
                               icon: Icon(Icons.drive_eta),
-                              child: Text("order by\ndistance", textAlign: TextAlign.center)
-                          ),
+                              child: Text("order by\ndistance",
+                                  textAlign: TextAlign.center)),
                         ],
                       )),
                   Expanded(
@@ -129,7 +148,7 @@ class _Gmaps extends State<Gmaps> {
                               return ListTile(
                                 title: Text(
                                     "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
-                                    style: TextStyle(color: Colors.green)),
+                                    style: TextStyle(color: temp[index].available ? Colors.green : Colors.red)),
                                 subtitle: Text(
                                     "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
                                     style: TextStyle(
@@ -138,7 +157,8 @@ class _Gmaps extends State<Gmaps> {
                                   onPressed: () {
                                     _launchMapsUrl(temp[index].pos.latitude,
                                         temp[index].pos.longitude);
-                                    RechargeManager.startRechargeMonitor(temp[index]);
+                                    RechargeManager.startRechargeMonitor(
+                                        temp[index]);
                                   },
                                   child: Text(
                                     "GO",
@@ -167,7 +187,7 @@ class _Gmaps extends State<Gmaps> {
                               return ListTile(
                                 title: Text(
                                     "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
-                                    style: TextStyle(color: Colors.green)),
+                                    style: TextStyle(color: temp[index].available ? Colors.green : Colors.red)),
                                 subtitle: Text(
                                     "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
                                     style: TextStyle(
@@ -176,7 +196,8 @@ class _Gmaps extends State<Gmaps> {
                                   onPressed: () {
                                     _launchMapsUrl(temp[index].pos.latitude,
                                         temp[index].pos.longitude);
-                                    RechargeManager.startRechargeMonitor(temp[index]);
+                                    RechargeManager.startRechargeMonitor(
+                                        temp[index]);
                                   },
                                   child: Text(
                                     "GO",
@@ -205,7 +226,7 @@ class _Gmaps extends State<Gmaps> {
                               return ListTile(
                                 title: Text(
                                     "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
-                                    style: TextStyle(color: Colors.green)),
+                                    style: TextStyle(color: temp[index].available ? Colors.green : Colors.red)),
                                 subtitle: Text(
                                     "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
                                     style: TextStyle(
@@ -214,7 +235,8 @@ class _Gmaps extends State<Gmaps> {
                                   onPressed: () {
                                     _launchMapsUrl(temp[index].pos.latitude,
                                         temp[index].pos.longitude);
-                                    RechargeManager.startRechargeMonitor(temp[index]);
+                                    RechargeManager.startRechargeMonitor(
+                                        temp[index]);
                                   },
                                   child: Text(
                                     "GO",
@@ -239,7 +261,6 @@ class _Gmaps extends State<Gmaps> {
               target: _center,
               zoom: 13.0,
             ),
-//              markers: _markers.values.toSet(),
             markers: _markers,
             onTap: (LatLng location) {
               setState(() {
@@ -284,7 +305,8 @@ class _Gmaps extends State<Gmaps> {
                                     "Speed: ${currentlySelectedStation.speed.toString()}kW/h",
                                     style: TextStyle(
                                         fontSize: 12, color: Colors.grey)),
-                                Text("Available: YES",
+                                Text(
+                                    "Available: ${currentlySelectedStation.available == true ? "YES" : "NO"}",
                                     style: TextStyle(
                                         fontSize: 12, color: Colors.grey))
                               ],
@@ -296,18 +318,17 @@ class _Gmaps extends State<Gmaps> {
                             _launchMapsUrl(
                                 currentlySelectedStation.pos.latitude,
                                 currentlySelectedStation.pos.longitude);
-                            RechargeManager.startRechargeMonitor(currentlySelectedStation);
+                            RechargeManager.startRechargeMonitor(
+                                currentlySelectedStation);
                           },
                           child: Text(
                             "GO",
                             style: TextStyle(color: Colors.blue),
                           ),
                         )
-                      ]))))
+                      ])))),
     ]);
   }
-
-
 
   void _onMapCreated(GoogleMapController controller) async {
     _mapController.complete(controller);
@@ -318,9 +339,13 @@ class _Gmaps extends State<Gmaps> {
   }
 
   void setCustomMapPin() async {
-    final Uint8List station =
+    final Uint8List greenStation =
         await getBytesFromAsset('assets/station_green.png', 140);
-    stationIcon = BitmapDescriptor.fromBytes(station);
+    greenStationIcon = BitmapDescriptor.fromBytes(greenStation);
+
+    final Uint8List redStation =
+    await getBytesFromAsset('assets/station_red.png', 140);
+    redStationIcon = BitmapDescriptor.fromBytes(redStation);
 
     await getData();
 
@@ -336,7 +361,7 @@ class _Gmaps extends State<Gmaps> {
               pinPillPosition = 20;
             });
           },
-          icon: stationIcon,
+          icon: elem.available ? greenStationIcon : redStationIcon,
         ));
         i++;
       }
@@ -358,8 +383,8 @@ class _Gmaps extends State<Gmaps> {
         await Firestore.instance.collection('charging_stations').getDocuments();
     final List<DocumentSnapshot> documents = result.documents;
 
-    documents.forEach((data) => stations
-        .add(ChargingStations(data["pos"], data["speed"], data["price"])));
+    documents.forEach((data) => stations.add(ChargingStations(
+        data["pos"], data["speed"], data["price"], data["available"])));
   }
 
   void _launchMapsUrl(double latitude, double longitude) async {
@@ -385,7 +410,7 @@ class _Gmaps extends State<Gmaps> {
     bool serviceStatus = await Geolocator().isLocationServiceEnabled();
     if (serviceStatus)
       currPos = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
   }
 
   Future<void> _moveToPosition(Position currPos) async {
@@ -397,20 +422,21 @@ class _Gmaps extends State<Gmaps> {
     )));
   }
 }
-double calculateDistance(double initialLat, double initialLong,
-      double finalLat, double finalLong) {
-    int R = 6371;
-    double dLat = toRadians(finalLat - initialLat);
-    double dLon = toRadians(finalLong - initialLong);
-    initialLat = toRadians(initialLat);
-    finalLat = toRadians(finalLat);
 
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        sin(dLon / 2) * sin(dLon / 2) * cos(initialLat) * cos(finalLat);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    return R * c;
-  }
+double calculateDistance(
+    double initialLat, double initialLong, double finalLat, double finalLong) {
+  int R = 6371;
+  double dLat = toRadians(finalLat - initialLat);
+  double dLon = toRadians(finalLong - initialLong);
+  initialLat = toRadians(initialLat);
+  finalLat = toRadians(finalLat);
 
-  double toRadians(double deg) {
-    return deg * pi / 180.0;
-  }
+  double a = sin(dLat / 2) * sin(dLat / 2) +
+      sin(dLon / 2) * sin(dLon / 2) * cos(initialLat) * cos(finalLat);
+  double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+  return R * c;
+}
+
+double toRadians(double deg) {
+  return deg * pi / 180.0;
+}

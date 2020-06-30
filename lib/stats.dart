@@ -198,29 +198,26 @@ class StatsPageState extends State<StatsPage> {
   }
 
   void updateStatistics() {
-    var temp;
+    List<Recharge> temp;
 
     switch (_selectedGranularity) {
       case "Week":
-        temp = _recharges.where((element) => Jiffy(element.timestamp.toDate()).week == Jiffy().week);
+        temp = _recharges.where((element) => Jiffy(element.timestamp.toDate()).week == Jiffy().week).toList();
         break;
 
       case "Month":
-        temp = _recharges.where((element) => Jiffy(element.timestamp.toDate()).month == Jiffy().month);
+        temp = _recharges.where((element) => Jiffy(element.timestamp.toDate()).month == Jiffy().month).toList();
         break;
 
       case "Year":
-        temp = _recharges.where((element) => Jiffy(element.timestamp.toDate()).year == Jiffy().year);
+        temp = _recharges.where((element) => Jiffy(element.timestamp.toDate()).year == Jiffy().year).toList();
         break;
     }
 
-    _totalSpent = temp
-        .map((e) => e.cashSpent)
-        .reduce((value, element) => value + element);
-    _totalRecharged = temp
-        .map((e) => e.kwRecharged)
-        .reduce((value, element) => value + element);
-    _meanPrice = _totalSpent / _totalRecharged;
+    _totalSpent = temp.fold(0, (previousValue, element) => previousValue + element.cashSpent);
+    _totalRecharged = temp.fold(0, (previousValue, element) => previousValue + element.kwRecharged);
+
+    _totalSpent == 0 ? _meanPrice = 0 : _meanPrice = _totalSpent / _totalRecharged;
 
     _totalSpent = double.parse(_totalSpent.toStringAsFixed(2));
     _totalRecharged = double.parse(_totalRecharged.toStringAsFixed(2));
@@ -237,7 +234,6 @@ class StatsPageState extends State<StatsPage> {
         .getDocuments();
 
     final List<DocumentSnapshot> documents = result.documents;
-//    print(result.documents.length);
     if (result.documents.length > 0) {
       documents.forEach((data) {
         // Can't use data["range"] and data["battery"] directly
@@ -247,7 +243,9 @@ class StatsPageState extends State<StatsPage> {
         Timestamp timestamp = data["timestamp"];
         var cashSpent = double.parse(data["cash_spent"].toString());
         var kwRecharged = double.parse(data["kw_recharged"].toString());
-        _recharges.add(Recharge(id, timestamp, cashSpent, kwRecharged));
+        var r = Recharge(id, timestamp, cashSpent, kwRecharged);
+        debugPrint("${r.id} ${r.timestamp} ${r.kwRecharged} ${r.cashSpent}");
+        _recharges.add(r);
       });
 
       updateStatistics();

@@ -1,13 +1,16 @@
+import 'dart:isolate';
 import 'dart:math';
+import 'dart:ui';
 import 'package:AlGa/charging_stations.dart';
+import 'package:background_locator/location_dto.dart';
+import 'package:background_locator/location_settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:background_locator/background_locator.dart';
 import 'package:geolocator/geolocator.dart';
-
 import 'main.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,7 +28,6 @@ class RechargeManager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     var _currentBatteryPercentage;
 
     return Scaffold(
@@ -75,21 +77,52 @@ class RechargeManager extends StatelessWidget {
             )));
   }
 
-  static void startRechargeMonitor(ChargingStations station) {
-    var geolocator = Geolocator();
-    var locationOptions =
-        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 30);
+  static const String _isolateName = "LocatorIsolate";
+
+  static Future<void> startRechargeMonitor(ChargingStations station) async {
+    // If Location is not enabled, don't do anything.
+    bool serviceStatus = await Geolocator().isLocationServiceEnabled();
+    if (!serviceStatus) return;
+
+    ReceivePort port = ReceivePort();
+    IsolateNameServer.registerPortWithName(port.sendPort, _isolateName);
 
     selectedStation = station;
     var stationPosition = station.pos;
 
-    geolocator.getPositionStream(locationOptions).listen((Position position) {
-      var distance = calculateDistance(position.latitude, position.longitude,
+    port.listen((dynamic data) {
+      var distance = calculateDistance(data.latitude, data.longitude,
           stationPosition.latitude, stationPosition.longitude);
-
-      print(distance);
-      if (distance < 0.2) _showNotificationStationReached();
+      if (distance < 0.2) {
+        stopLocationService();
+        _showNotificationStationReached();
+      }
     });
+
+    startLocationService();
+  }
+
+  static void callback(LocationDto locationDto) async {
+    final SendPort send = IsolateNameServer.lookupPortByName(_isolateName);
+    send?.send(locationDto);
+  }
+
+  static Future<void> startLocationService() async {
+    await BackgroundLocator.initialize();
+    BackgroundLocator.registerLocationUpdate(
+      callback,
+      settings: LocationSettings(
+          notificationTitle: "AlGa is tracking location.",
+          notificationMsg: "This is needed due to Android limitations.",
+          wakeLockTime: 60,
+          autoStop: false,
+          interval: 5),
+    );
+  }
+
+  static void stopLocationService() {
+    IsolateNameServer.removePortNameMapping(_isolateName);
+    BackgroundLocator.unRegisterLocationUpdate();
   }
 }
 
@@ -157,9 +190,12 @@ Future _showNotificationChargeCompleted(
       .collection("0")
       .document()
       .setData({
-        'timestamp': estimatedEnd,
-        'cash_spent': double.parse(((_userCarBattery * (1 - currentBatteryPercentage)) * station.price).toStringAsFixed(2)),
-        'kw_recharged': double.parse((_userCarBattery * (1 - currentBatteryPercentage)).toStringAsFixed(2))
+    'timestamp': estimatedEnd,
+    'cash_spent': double.parse(
+        ((_userCarBattery * (1 - currentBatteryPercentage)) * station.price)
+            .toStringAsFixed(2)),
+    'kw_recharged': double.parse(
+        (_userCarBattery * (1 - currentBatteryPercentage)).toStringAsFixed(2))
   });
 }
 

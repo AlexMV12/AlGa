@@ -1,3 +1,4 @@
+import 'package:AlGa/recharge_manager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:AlGa/stats.dart';
