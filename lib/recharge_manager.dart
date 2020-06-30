@@ -16,7 +16,7 @@ import 'main.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-    'AlGa', 'AlGa', 'AlGa',
+    'AlGa', 'AlGa', 'AlGa', icon: 'app_icon',
     importance: Importance.Max, priority: Priority.High);
 var iOSPlatformChannelSpecifics = IOSNotificationDetails();
 var platformChannelSpecifics = NotificationDetails(

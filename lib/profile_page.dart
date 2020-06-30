@@ -457,15 +457,21 @@ class ProfileState extends State<Profile> {
       decoration: const InputDecoration(labelText: 'Battery'),
       keyboardType: TextInputType.number,
       validator: (value) {
-        var parsedValue = double.parse(value);
-        if (parsedValue < 0 || parsedValue > 300) {
+        try {
+          var parsedValue = double.parse(value);
+          if (parsedValue < 0 || parsedValue > 300) {
+            return 'Battery should be a value\nbetween 0 and 300';
+          }
+        }
+        catch (e) {
           return 'Battery should be a value\nbetween 0 and 300';
         }
+
         return null;
       },
       onSaved: (String value) {
-        var parsedValue = double.parse(value);
-        _newUserCarBattery = parsedValue;
+        var parsed = double.parse(value);
+        _newUserCarBattery = double.parse(parsed.toStringAsFixed(2));
       },
     );
   }
@@ -475,15 +481,21 @@ class ProfileState extends State<Profile> {
       decoration: const InputDecoration(labelText: 'Range'),
       keyboardType: TextInputType.number,
       validator: (value) {
-        var parsedValue = double.parse(value);
-        if (parsedValue < 0 || parsedValue > 1000) {
+        try {
+          var parsedValue = double.parse(value);
+          if (parsedValue < 0 || parsedValue > 1000) {
+            return 'Range should be a value\nbetween 0 and 1000';
+          }
+        }
+        catch (e) {
           return 'Range should be a value\nbetween 0 and 1000';
         }
+
         return null;
       },
       onSaved: (String value) {
-        var parsedValue = double.parse(value);
-        _newUserCarRange = parsedValue;
+        var parsed = double.parse(value);
+        _newUserCarRange = double.parse(parsed.toStringAsFixed(2));
       },
     );
   }

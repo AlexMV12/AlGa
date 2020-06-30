@@ -41,6 +41,7 @@ dependencies:
   flutter_local_notifications: ^0.8.4+2
   jiffy: ^3.0.1
   background_locator: ^1.1.10+1
+  wakelock: ^0.1.4+1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.7.3"

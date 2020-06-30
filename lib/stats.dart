@@ -12,6 +12,9 @@ class StatsPage extends StatefulWidget {
 }
 
 class StatsPageState extends State<StatsPage> {
+
+  final GlobalKey<FormState> _newCashSpentForm = GlobalKey<FormState>();
+
   Future<bool> _isDataReady;
   List<Recharge> _recharges = [];
 
@@ -21,6 +24,9 @@ class StatsPageState extends State<StatsPage> {
   var _totalRecharged;
   var _meanPrice;
   var _selectedGranularity = "Week";
+
+  var _newCashSpent;
+  var _newKwRecharged;
 
   @override
   void initState() {
@@ -132,7 +138,6 @@ class StatsPageState extends State<StatsPage> {
                             height: 400,
                             child: Scrollbar(
                                 child: ListView.builder(
-//                      padding: const EdgeInsets.all(8),
                                     itemCount: _recharges.length,
                                     itemBuilder: (BuildContext context,
                                         int index) {
@@ -143,6 +148,38 @@ class StatsPageState extends State<StatsPage> {
                                             horizontal: 30, vertical: 5),
                                         child: Row(
                                           children: <Widget>[
+                                            IconButton(
+                                              icon: Icon(Icons.mode_edit),
+                                              onPressed: () => {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (BuildContext context) {
+                                                      return AlertDialog(
+                                                        content: new SingleChildScrollView(
+                                                            child: new Form(
+                                                                key: _newCashSpentForm,
+                                                                child: Column(children: <Widget>[
+                                                                  Text(
+                                                                      "You can fix the values of the recharge."),
+                                                                  newCashSpentForm(_recharges[index]),
+                                                                  newKwRechargedForm(_recharges[index]),
+                                                                ]))),
+                                                        actions: <Widget>[
+                                                          IconButton(
+                                                              icon: Icon(Icons.check),
+                                                              onPressed: () {
+                                                                if (_newCashSpentForm.currentState
+                                                                    .validate()) {
+                                                                  _newCashSpentForm.currentState.save();
+                                                                  modifyRecharge(_recharges[index]);
+                                                                  Navigator.pop(context);
+                                                                }
+                                                              })
+                                                        ],
+                                                      );
+                                                    })
+                                              },
+                                            ),
                                             IconButton(
                                               icon: Icon(Icons.delete),
                                               onPressed: () => deleteRecharge(_recharges[index]),
@@ -188,12 +225,77 @@ class StatsPageState extends State<StatsPage> {
         });
   }
 
+  Widget newKwRechargedForm(Recharge r) {
+    return TextFormField(
+      initialValue: r.kwRecharged.toString(),
+      decoration: const InputDecoration(labelText: 'kW recharged'),
+      keyboardType: TextInputType.number,
+      validator: (value) {
+        try {
+          var parsedValue = double.parse(value);
+          if (parsedValue < 0 || parsedValue > 500) {
+            return 'kW should be a value\nbetween 0 and 500';
+          }
+        }
+        catch (e) {
+          return 'kW should be a value\nbetween 0 and 500';
+        }
+
+        return null;
+      },
+      onSaved: (String val) {
+        var parsed = double.parse(val);
+        _newKwRecharged = double.parse(parsed.toStringAsFixed(2));
+      },
+    );
+  }
+
+  Widget newCashSpentForm(Recharge r) {
+    return TextFormField(
+      initialValue: r.cashSpent.toString(),
+      decoration: const InputDecoration(labelText: 'Cash spent'),
+      keyboardType: TextInputType.number,
+      validator: (value) {
+        try {
+          var parsedValue = double.parse(value);
+          if (parsedValue < 0 || parsedValue > 100) {
+            return 'Cash spent should be a value\nbetween 0 and 100';
+          }
+        }
+        catch (e) {
+          return 'Cash spent should be a value\nbetween 0 and 100';
+        }
+
+        return null;
+      },
+      onSaved: (String val) {
+        var parsed = double.parse(val);
+        _newCashSpent = double.parse(parsed.toStringAsFixed(2));
+      },
+    );
+  }
+
+  void modifyRecharge(Recharge recharge) async {
+    var user = await _auth.currentUser();
+    await Firestore.instance.collection("recharges").document(user.uid).collection("0").document(recharge.id).updateData({
+      'cash_spent': _newCashSpent,
+      'kw_recharged': _newKwRecharged
+    });
+
+    setState(() {
+      _recharges.where((element) => element.id == recharge.id).first.cashSpent = _newCashSpent;
+      _recharges.where((element) => element.id == recharge.id).first.kwRecharged = _newKwRecharged;
+      updateStatistics();
+    });
+  }
+
   void deleteRecharge(Recharge recharge) async {
     var user = await _auth.currentUser();
     await Firestore.instance.collection("recharges").document(user.uid).collection("0").document(recharge.id).delete();
 
     setState(() {
       _recharges.remove(recharge);
+      updateStatistics();
     });
   }
 
@@ -244,7 +346,7 @@ class StatsPageState extends State<StatsPage> {
         var cashSpent = double.parse(data["cash_spent"].toString());
         var kwRecharged = double.parse(data["kw_recharged"].toString());
         var r = Recharge(id, timestamp, cashSpent, kwRecharged);
-        debugPrint("${r.id} ${r.timestamp} ${r.kwRecharged} ${r.cashSpent}");
+
         _recharges.add(r);
       });
 
