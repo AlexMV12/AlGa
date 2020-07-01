@@ -29,7 +29,7 @@ class RechargeManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var _currentBatteryPercentage;
-
+    debugPrint("building recharge manager...");
     return Scaffold(
         appBar: AppBar(
           title: Text("AlGa"),
@@ -200,12 +200,6 @@ Future _showNotificationChargeCompleted(
 }
 
 Future _showNotificationStationReached() async {
-  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'AlGa', 'AlGa', 'AlGa',
-      importance: Importance.Max, priority: Priority.High);
-  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-  var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.show(
     0,
     'Charging station reached',

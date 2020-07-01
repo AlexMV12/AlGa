@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'home_page.dart';
+import 'main.dart';
 import 'register_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -61,7 +62,7 @@ class SignInPageState extends State<SignInPage> {
                     success.then((value) {
                       if (value) {
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute<void>(builder: (_) => HomePage()),
+                          MaterialPageRoute<void>(builder: (_) => MyApp()),
                         );
                       } else {
                         Scaffold.of(context).showSnackBar(SnackBar(

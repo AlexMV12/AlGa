@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
               }
 
               if (payload == "station_reached")
+                debugPrint("pushing recharge manager...");
                 Navigator.of(context).push(
                     MaterialPageRoute<void>(builder: (_) => RechargeManager()));
             });
