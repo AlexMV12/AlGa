@@ -25,6 +25,7 @@ class StatsPageState extends State<StatsPage> {
   var _meanPrice;
   var _selectedGranularity = "Week";
 
+  var _pickedDate = DateTime.now();
   var _newCashSpent;
   var _newKwRecharged;
 
@@ -81,7 +82,11 @@ class StatsPageState extends State<StatsPage> {
                         Text(
                           "No charges so far.",
                           style: TextStyle(fontSize: 20),
-                        )
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        newRecharge()
                       ],
                     ));
               else
@@ -111,7 +116,6 @@ class StatsPageState extends State<StatsPage> {
                             setState(() {
                               _selectedGranularity = newValue;
                               updateStatistics();
-//                            updateCar();
                             });
                           },
                           items: _granularity
@@ -134,7 +138,7 @@ class StatsPageState extends State<StatsPage> {
                       height: 10,
                     ),
                     Container(
-                        height: MediaQuery.of(context).size.height - 400,
+                        height: MediaQuery.of(context).size.height - 420,
                         child: Scrollbar(
                             child: ListView.builder(
                                 itemCount: _recharges.length,
@@ -143,7 +147,7 @@ class StatsPageState extends State<StatsPage> {
                                       a.timestamp.compareTo(b.timestamp));
                                   return Padding(
                                     padding: EdgeInsets.symmetric(
-                                        horizontal: 30, vertical: 5),
+                                        horizontal: 10, vertical: 2),
                                     child: Row(
                                       children: <Widget>[
                                         IconButton(
@@ -216,7 +220,8 @@ class StatsPageState extends State<StatsPage> {
                                       ],
                                     ),
                                   );
-                                })))
+                                }))),
+                    newRecharge()
                   ],
                 ));
             }
@@ -225,6 +230,51 @@ class StatsPageState extends State<StatsPage> {
   }
 
   format(Duration d) => d.toString().split('.').first.padLeft(8, "0");
+
+  Widget newRecharge() {
+    return Center(
+      child: FlatButton(
+        color: Colors.grey,
+        splashColor: Colors.blueAccent,
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                Recharge _newRecharge = Recharge("0", Timestamp.now(), 0, 0);
+                return AlertDialog(
+                  content: new SingleChildScrollView(
+                      child: new Form(
+                          key: _newCashSpentForm,
+                          child: Column(children: <Widget>[
+                            Text("You can add a custom recharge."),
+                            FlatButton(
+                                color: Colors.grey,
+                                onPressed: () => _pickDate(),
+                                child: Text("Choose the time and date.")),
+                            newCashSpentForm(_newRecharge),
+                            newKwRechargedForm(_newRecharge),
+                          ]))),
+                  actions: <Widget>[
+                    IconButton(
+                        icon: Icon(Icons.check),
+                        onPressed: () {
+                          if (_newCashSpentForm.currentState.validate()) {
+                            _newCashSpentForm.currentState.save();
+                            addRecharge(_newRecharge);
+                            Navigator.pop(context);
+                          }
+                        })
+                  ],
+                );
+              });
+        },
+        child: Text(
+          "Add a recharge",
+          style: TextStyle(fontSize: 15.0),
+        ),
+      ),
+    );
+  }
 
   Widget newKwRechargedForm(Recharge r) {
     return TextFormField(
@@ -272,6 +322,56 @@ class StatsPageState extends State<StatsPage> {
         _newCashSpent = double.parse(parsed.toStringAsFixed(2));
       },
     );
+  }
+
+  _pickDate() async {
+    DateTime date = await showDatePicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 5),
+      lastDate: DateTime(DateTime.now().year + 5),
+      initialDate: _pickedDate,
+    );
+    if (date != null)
+      setState(() {
+        _pickedDate = date;
+      });
+
+    TimeOfDay t = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        builder: (BuildContext context, Widget child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child,
+          );
+        });
+    if (t != null)
+      setState(() {
+        _pickedDate = new DateTime(_pickedDate.year, _pickedDate.month,
+            _pickedDate.day, t.hour, t.minute, _pickedDate.second);
+      });
+  }
+
+  void addRecharge(Recharge recharge) async {
+    recharge.timestamp = Timestamp.fromDate(_pickedDate);
+    recharge.kwRecharged = _newKwRecharged;
+    recharge.cashSpent = _newCashSpent;
+    var user = await _auth.currentUser();
+    await Firestore.instance
+        .collection("recharges")
+        .document(user.uid)
+        .collection("0")
+        .document()
+        .setData({
+      'timestamp': recharge.timestamp,
+      'cash_spent': _newCashSpent,
+      'kw_recharged': _newKwRecharged
+    });
+
+    setState(() {
+      _recharges.add(recharge);
+      updateStatistics();
+    });
   }
 
   void modifyRecharge(Recharge recharge) async {
