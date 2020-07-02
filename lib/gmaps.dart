@@ -47,6 +47,8 @@ class _Gmaps extends State<Gmaps> with WidgetsBindingObserver {
 
   PanelController _pc = new PanelController();
 
+  NumberFormat numberFormat = new NumberFormat("0.00");
+
   @override
   void initState() {
     super.initState();
@@ -64,7 +66,6 @@ class _Gmaps extends State<Gmaps> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    NumberFormat numberFormat = new NumberFormat("0.00");
     return Stack(children: <Widget>[
       SlidingUpPanel(
           controller: _pc,
@@ -145,27 +146,7 @@ class _Gmaps extends State<Gmaps> with WidgetsBindingObserver {
                                     x.pos.longitude);
                               }
                               temp.sort((a, b) => a.price.compareTo(b.price));
-                              return ListTile(
-                                title: Text(
-                                    "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
-                                    style: TextStyle(color: temp[index].available ? Colors.green : Colors.red)),
-                                subtitle: Text(
-                                    "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
-                                trailing: FlatButton(
-                                  onPressed: () {
-                                    _launchMapsUrl(temp[index].pos.latitude,
-                                        temp[index].pos.longitude);
-                                    RechargeManager.startRechargeMonitor(
-                                        temp[index]);
-                                  },
-                                  child: Text(
-                                    "GO",
-                                    style: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                              );
+                              return listItem(temp, index);
                             },
                           ),
                           ListView.builder(
@@ -184,27 +165,7 @@ class _Gmaps extends State<Gmaps> with WidgetsBindingObserver {
                               }
                               temp.sort((a, b) => -a.speed.compareTo(
                                   b.speed)); // "-" for descending order
-                              return ListTile(
-                                title: Text(
-                                    "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
-                                    style: TextStyle(color: temp[index].available ? Colors.green : Colors.red)),
-                                subtitle: Text(
-                                    "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
-                                trailing: FlatButton(
-                                  onPressed: () {
-                                    _launchMapsUrl(temp[index].pos.latitude,
-                                        temp[index].pos.longitude);
-                                    RechargeManager.startRechargeMonitor(
-                                        temp[index]);
-                                  },
-                                  child: Text(
-                                    "GO",
-                                    style: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                              );
+                              return listItem(temp, index);
                             },
                           ),
                           ListView.builder(
@@ -223,27 +184,7 @@ class _Gmaps extends State<Gmaps> with WidgetsBindingObserver {
                               }
                               temp.sort(
                                   (a, b) => a.distance.compareTo(b.distance));
-                              return ListTile(
-                                title: Text(
-                                    "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
-                                    style: TextStyle(color: temp[index].available ? Colors.green : Colors.red)),
-                                subtitle: Text(
-                                    "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
-                                trailing: FlatButton(
-                                  onPressed: () {
-                                    _launchMapsUrl(temp[index].pos.latitude,
-                                        temp[index].pos.longitude);
-                                    RechargeManager.startRechargeMonitor(
-                                        temp[index]);
-                                  },
-                                  child: Text(
-                                    "GO",
-                                    style: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                              );
+                              return listItem(temp, index);
                             },
                           ),
                         ],
@@ -328,6 +269,49 @@ class _Gmaps extends State<Gmaps> with WidgetsBindingObserver {
                         )
                       ])))),
     ]);
+  }
+
+  Widget listItem(temp, index) {
+    return ListTile(
+      title: Text(
+          "Distance: ${numberFormat.format(temp[index].distance).toString()} Km",
+          style: TextStyle(color: temp[index].available ? Colors.green : Colors.red)),
+      subtitle: Text(
+          "Speed: ${temp[index].speed.toString()}kW/h Price: ${temp[index].price.toString()}€/kW",
+          style: TextStyle(
+              fontSize: 12, color: Colors.grey)),
+      trailing: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.38,
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.gps_fixed),
+                iconSize: 20,
+                onPressed: () => {
+                  setState(() {
+                    _pc.close();
+                    currentlySelectedStation = temp[index];
+                    var pos = new Position(latitude: currentlySelectedStation.pos.latitude, longitude: currentlySelectedStation.pos.longitude);
+                    _moveToPosition(pos);
+                    pinPillPosition = 20;
+                  })
+                },
+              ),
+              FlatButton(
+                onPressed: () {
+                  _launchMapsUrl(temp[index].pos.latitude,
+                      temp[index].pos.longitude);
+                  RechargeManager.startRechargeMonitor(
+                      temp[index]);
+                },
+                child: Text(
+                  "GO",
+                  style: TextStyle(color: Colors.blue),
+                ),
+              )
+            ],
+          )),
+    );
   }
 
   void _onMapCreated(GoogleMapController controller) async {
