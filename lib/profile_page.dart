@@ -110,11 +110,13 @@ class ProfileState extends State<Profile> {
                             textAlign: TextAlign.right,
                             style: TextStyle(color: Colors.grey),
                           ),
-                          Text(
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width - 155,
+                            child: Text(
                             _name,
                             textAlign: TextAlign.left,
                             style: TextStyle(fontSize: 19),
-                          ),
+                          ))
                         ],
                       ),
                       Spacer(),
@@ -146,7 +148,7 @@ class ProfileState extends State<Profile> {
                               })
                         },
                       ),
-                      SizedBox(width: 30),
+                      SizedBox(width: 5),
                     ],
                   ),
                   Divider(),
@@ -296,11 +298,13 @@ class ProfileState extends State<Profile> {
                           textAlign: TextAlign.right,
                           style: TextStyle(color: Colors.grey),
                         ),
-                        Text(
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width - 155,
+                            child: Text(
                           _userEmail,
                           textAlign: TextAlign.left,
                           style: TextStyle(fontSize: 17),
-                        ),
+                        )),
                       ],
                     ),
                     Spacer(),
@@ -336,7 +340,7 @@ class ProfileState extends State<Profile> {
                             })
                       },
                     ),
-                    SizedBox(width: 30)
+                    SizedBox(width: 5)
                   ]),
                   Divider(),
                   FlatButton(
