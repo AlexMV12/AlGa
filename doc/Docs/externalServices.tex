@@ -1,2 +1,28 @@
-\chapter{External services}
+\chapter{External services and Libraries}
 \label{chap:externalServices}
+We used many external services and libraries, some of them are useful to implement the core of the application, such as Firebase, while others just enhance the user experience. 
+
+Integrating these external services we didn't need to reimplement that functionalities by our own and since they are specialised in their field their efficiency is much higher. 
+\section{Firebase}
+\subsection{Authentication}
+This service of course represent the main entrance of the application since it handles the authentication process of users. It was very simple to implement because it requires just client-side code and it allows users to register or login with the classic email and password method or GitHub OAuth. The server-side of the application simply verify that the credential inserted are corrected and allows the user to log in.
+\subsection{Database}
+The Database provided by Firebase is of the NoSQL type and has several advantages: data can be updated directly in th Web Console or through a simple program, Flutter provides simple APIs to interact with it asynchronously and everything is stored in the Firebase's cloud. 
+
+We use it to store different type of cars, charging stations with their location and properties, users with their saved settings(i.e. name and car) and all the recharges made. 
+\subsection{Storage}
+We use this service just to store the profile pictures of each users that eventually uploaded it. 
+\section{Google Cloud Platform}
+\subsection{Google Maps}
+It is probably the most important feature of this application, it allows to see and select the charging stations, visualised with a custom pin, check the own position and navigate on the map. Using Google Maps keeps the UI simple for the users because most of them already use it. 
+
+The navigation point-to-point is kept outside the application because the free plan doesn't permit that feature. 
+\section{Minor Packages}
+\begin{itemize}
+	\item \textbf{image\_picker}: it allows to upload images from the smartphone gallery, specifically for users that want to upload their profile pictures
+	\item \textbf{email\_validator}: it is used to validate the email inserted by a user during registration process
+	\item \textbf{url\_launcher}: it launches an external URL, we used it to launch the point-to-point navigation in Google Maps
+	\item \textbf{sliding\_up\_panel}: we implemented a sliding up panel to visualise the charging stations by different order
+	\item \textbf{flutter\_local\_notifications}: it is used to display push notification when a recharge is finished
+	\item \textbf{background\_locator}: it gets location updates even when the application is killed, it's useful to check if the user has arrived at the selected charging station
+\end{itemize}
