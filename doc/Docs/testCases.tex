@@ -1,2 +1,490 @@
 \chapter{Test Cases}
 \label{chap:testCases}
+AlGa has been tested using both emulators and real devices. Obviously, the use of an emulator can speed up the testing and debugging of the application; for example the possibility to change GPS location, battery, check notifications etc.
+
+However, mobile applications are made to be used on real devices. Thus, is very important to check that everything works well on smartphones of different vendors, given the problem of fragmentation which afflicts the Android environment.
+In particular, we used Sony and Xiaomi devices, with Android 9 and 10.
+
+These are the use cases tested for correctness.
+
+\section{Login and registration}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Registration \\
+	    \hline
+	    Entry conditions & User has AlGa app installed on their smartphone and it is not already registered\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Open the application
+			    \item Click on the Register button
+			    \item Fill the Email, username, password form and choose a Car
+			    \item Click on "Submit"
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The app shows the main screen to the user and the user is enrolled in the system.\\
+	    \hline
+	    Notes & The app correctly checks for the validity of the various fields of the registration\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Sign in \\
+	    \hline
+	    Entry conditions & User has AlGa app installed on their smartphone and it is already registered\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Open the application
+			    \item Fill the email and password forms
+			    \item Click the ``Sign In'' button
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The user is logged-in with their credentials\\
+	    \hline
+	    Notes & The sign-in is rejected if the credentials are not correct\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Sign in with GitHub\\
+	    \hline
+	    Entry conditions & User has a GitHub account and has AlGa installed on their phone\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Open the application
+			    \item Click on the "Login with GitHub" button
+			    \item Login into GitHub in the browser page which is opened
+			    \item The user is redirected into AlGa
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & User is logged-in with their GitHub account\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Logout\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Press on the Logout button in any application screen
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The user is logged-out and the app accepts a new user\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+
+\section{Stats page}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Add a recharge\\
+	    \hline
+	    Entry conditions & User is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the "Add a recharge button"
+			    \item Choose a date and time with the selector
+			    \item Fill the "Cash spent" and "kw recharged" forms
+			    \item Click on the tick
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The recharge is correctly added and immediately shown to the user\\
+	    \hline
+	    Notes & The app checks for the validity and range of Cash spent and kw recharged\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Modify a recharge\\
+	    \hline
+	    Entry conditions & The user is logged-in and has already done/added a recharge\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the modify button near a station
+			    \item Fill the Cash spent and kW recharged forms
+			    \item Click on the tick
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The recharge is updated\\
+	    \hline
+	    Notes & The values are checked for validity and range. The initial values are the original ones.\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Delete a recharge\\
+	    \hline
+	    Entry conditions & The user is logged-in and has already done/added a recharge\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the delete button near a station
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The recharge is deleted and the updated list is shown to the user\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Stats granularity\\
+	    \hline
+	    Entry conditions & The user is logged-in and has already done/added a recharge\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the Week/Month/Year selector under "Statistics"
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The statistics are updated taking into consideration only the recharges in the range selected\\
+	    \hline
+	    Notes & \\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+
+\section{Stations}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Explore the map\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the stations tab
+			    \item Move around the map
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The map shows the recharge stations and the other elements of Google Maps\\
+	    \hline
+	    Notes & The stations marked in Green are available, the ones marked in Red are not\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & See a station's details\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the stations tab
+			    \item Click on a recharge station
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & A window is shown with the details of the station\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Navigation toward a station\\
+	    \hline
+	    Entry conditions & The user is looking at a station's detail\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on a station in the map
+			    \item Click on the GO button in the details window
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & A Google Maps link is launched and AlGa starts monitoring the user's position\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Order the stations\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the stations tab
+			    \item Swipe up the stations panel
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The stations are shown ordered by the characteristic chosen (price, speed, distance)\\
+	    \hline
+	    Notes & Stations are colored in red/green according to their availability\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Locate a station from the list\\
+	    \hline
+	    Entry conditions & The user has opened the stations panel\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the geolocate button near a station
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The panel is closed and the map is centered on the selected station\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Launch the navigation from the stations panel\\
+	    \hline
+	    Entry conditions & The user has opened the station panel\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the GO button near a station
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & A Google Maps link is launched\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Start a recharge\\
+	    \hline
+	    Entry conditions & The user has launched a navigation toward a station and the user is near the station\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item A notification is shown
+			    \item Click on the notification
+			    \item Fill the Current battery percentage form
+			    \item Click on the tick
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The recharge is saved into the database and a notification is scheduled for the end time\\
+	    \hline
+	    Notes & The notification for the end of the recharge is shown either with AlGa open or closed. The endtime is correctly calculated based on the user's car values\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+
+\section{Profile}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Check the profile\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the profile tab
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The user's details are shown\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Change profile pic\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the profile tab
+			    \item Click on the change picture button
+			    \item Select an image from the selector
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The profile pic is updated\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Change the username\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the profile tab
+			    \item Click on the modify button near the username
+			    \item Fill the username form
+			    \item Click on the tick button
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The username is updated\\
+	    \hline
+	    Notes & The new username's length is checked\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Modify user's car\\
+	    \hline
+	    Entry conditions & User is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the profile tab
+			    \item Click on the car selector
+			    \item Choose a new car
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The car and its values for battery and range are updated\\
+	    \hline
+	    Notes & None\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Modify car values\\
+	    \hline
+	    Entry conditions & User is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the modify button near the battery/range values
+			    \item Fill the form
+			    \item Click on the tick
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The values are updated\\
+	    \hline
+	    Notes & The values are checked for validity\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Modify e-mail\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the modify button near the email
+			    \item Fill the form with a new email and the current password
+			    \item Click on the tick
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The user's email is updated\\
+	    \hline
+	    Notes & The email is checked for validity; the password is checked; this test case is not available in case of GitHub login\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Modify password\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the Edit password button
+			    \item Fill the form with the current and new password
+			    \item Click on the tick
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The user's password is updated\\
+	    \hline
+	    Notes & The password is checked for validity; the current password is checked; this test case is not available in case of GitHub login\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+\begin{figure}[H]
+    \subfloat[]{
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+	    \hline
+	    Name & Delete account\\
+	    \hline
+	    Entry conditions & The user is logged-in\\
+	    \hline
+	    Events flow & \begin{enumerate}
+			    \item Click on the Delete account button
+			    \item Fill the form with the current password
+			    \item Click on the tick
+			  \end{enumerate}\\
+	    \hline
+	    Exit conditions & The user's profile is deleted and the user is logged-out\\
+	    \hline
+	    Notes & The current password is checked\\
+	    \bottomrule	
+	\end{tabular}
+    }\quad
+\end{figure}
+
+
