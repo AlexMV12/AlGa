@@ -12,7 +12,14 @@
 \contentsline {chapter}{\numberline {3}Architecture}{9}{chapter.3}
 \contentsline {section}{\numberline {3.1}Use case diagrams}{10}{section.3.1}
 \contentsline {chapter}{\numberline {4}Design}{12}{chapter.4}
-\contentsline {chapter}{\numberline {5}External services}{13}{chapter.5}
-\contentsline {chapter}{\numberline {6}Test Cases}{14}{chapter.6}
-\contentsline {chapter}{\numberline {7}Cost estimation}{15}{chapter.7}
-\contentsline {chapter}{\numberline {8}Conclusions}{16}{chapter.8}
+\contentsline {chapter}{\numberline {5}External services and Libraries}{13}{chapter.5}
+\contentsline {section}{\numberline {5.1}Firebase}{13}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Authentication}{13}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Database}{13}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}Storage}{14}{subsection.5.1.3}
+\contentsline {section}{\numberline {5.2}Google Cloud Platform}{14}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Google Maps}{14}{subsection.5.2.1}
+\contentsline {section}{\numberline {5.3}Minor Packages}{14}{section.5.3}
+\contentsline {chapter}{\numberline {6}Test Cases}{15}{chapter.6}
+\contentsline {chapter}{\numberline {7}Cost estimation}{16}{chapter.7}
+\contentsline {chapter}{\numberline {8}Conclusions}{17}{chapter.8}
