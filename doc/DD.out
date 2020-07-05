@@ -9,17 +9,24 @@
 \BOOKMARK [1][-]{section.2.2}{Product functions}{chapter.2}% 9
 \BOOKMARK [1][-]{section.2.3}{User characteristics}{chapter.2}% 10
 \BOOKMARK [1][-]{section.2.4}{Assumptions, dependencies and constraints}{chapter.2}% 11
-\BOOKMARK [0][-]{chapter.3}{Architecture}{}% 12
-\BOOKMARK [1][-]{section.3.1}{Use case diagrams}{chapter.3}% 13
-\BOOKMARK [0][-]{chapter.4}{Design}{}% 14
-\BOOKMARK [0][-]{chapter.5}{External services and Libraries}{}% 15
-\BOOKMARK [1][-]{section.5.1}{Firebase}{chapter.5}% 16
-\BOOKMARK [2][-]{subsection.5.1.1}{Authentication}{section.5.1}% 17
-\BOOKMARK [2][-]{subsection.5.1.2}{Database}{section.5.1}% 18
-\BOOKMARK [2][-]{subsection.5.1.3}{Storage}{section.5.1}% 19
-\BOOKMARK [1][-]{section.5.2}{Google Cloud Platform}{chapter.5}% 20
-\BOOKMARK [2][-]{subsection.5.2.1}{Google Maps}{section.5.2}% 21
-\BOOKMARK [1][-]{section.5.3}{Minor Packages}{chapter.5}% 22
-\BOOKMARK [0][-]{chapter.6}{Test Cases}{}% 23
-\BOOKMARK [0][-]{chapter.7}{Cost estimation}{}% 24
-\BOOKMARK [0][-]{chapter.8}{Conclusions}{}% 25
+\BOOKMARK [1][-]{section.2.5}{Use case diagrams}{chapter.2}% 12
+\BOOKMARK [0][-]{chapter.3}{Architecture}{}% 13
+\BOOKMARK [1][-]{section.3.1}{Client-side application}{chapter.3}% 14
+\BOOKMARK [2][-]{subsection.3.1.1}{Code package}{section.3.1}% 15
+\BOOKMARK [1][-]{section.3.2}{Server-side application}{chapter.3}% 16
+\BOOKMARK [0][-]{chapter.4}{Design}{}% 17
+\BOOKMARK [0][-]{chapter.5}{External services and Libraries}{}% 18
+\BOOKMARK [1][-]{section.5.1}{Firebase}{chapter.5}% 19
+\BOOKMARK [2][-]{subsection.5.1.1}{Authentication}{section.5.1}% 20
+\BOOKMARK [2][-]{subsection.5.1.2}{Database}{section.5.1}% 21
+\BOOKMARK [2][-]{subsection.5.1.3}{Storage}{section.5.1}% 22
+\BOOKMARK [1][-]{section.5.2}{Google Cloud Platform}{chapter.5}% 23
+\BOOKMARK [2][-]{subsection.5.2.1}{Google Maps}{section.5.2}% 24
+\BOOKMARK [1][-]{section.5.3}{Minor Packages}{chapter.5}% 25
+\BOOKMARK [0][-]{chapter.6}{Test Cases}{}% 26
+\BOOKMARK [1][-]{section.6.1}{Login and registration}{chapter.6}% 27
+\BOOKMARK [1][-]{section.6.2}{Stats page}{chapter.6}% 28
+\BOOKMARK [1][-]{section.6.3}{Stations}{chapter.6}% 29
+\BOOKMARK [1][-]{section.6.4}{Profile}{chapter.6}% 30
+\BOOKMARK [0][-]{chapter.7}{Cost estimation}{}% 31
+\BOOKMARK [0][-]{chapter.8}{Conclusions}{}% 32

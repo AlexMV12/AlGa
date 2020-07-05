@@ -1,25 +1,32 @@
-\contentsline {chapter}{\numberline {1}Introduction}{3}{chapter.1}
-\contentsline {section}{\numberline {1.1}Purpose}{3}{section.1.1}
-\contentsline {subsection}{\numberline {1.1.1}Goals}{3}{subsection.1.1.1}
-\contentsline {section}{\numberline {1.2}Scope}{4}{section.1.2}
-\contentsline {section}{\numberline {1.3}Definitions, Acronyms, Abbreviations}{4}{section.1.3}
-\contentsline {section}{\numberline {1.4}Document Structure}{5}{section.1.4}
-\contentsline {chapter}{\numberline {2}Idea and Requirements}{6}{chapter.2}
-\contentsline {section}{\numberline {2.1}Product perspective}{6}{section.2.1}
-\contentsline {section}{\numberline {2.2}Product functions}{7}{section.2.2}
-\contentsline {section}{\numberline {2.3}User characteristics}{8}{section.2.3}
-\contentsline {section}{\numberline {2.4}Assumptions, dependencies and constraints}{8}{section.2.4}
-\contentsline {chapter}{\numberline {3}Architecture}{9}{chapter.3}
-\contentsline {section}{\numberline {3.1}Use case diagrams}{10}{section.3.1}
-\contentsline {chapter}{\numberline {4}Design}{12}{chapter.4}
-\contentsline {chapter}{\numberline {5}External services and Libraries}{13}{chapter.5}
-\contentsline {section}{\numberline {5.1}Firebase}{13}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Authentication}{13}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Database}{13}{subsection.5.1.2}
-\contentsline {subsection}{\numberline {5.1.3}Storage}{14}{subsection.5.1.3}
-\contentsline {section}{\numberline {5.2}Google Cloud Platform}{14}{section.5.2}
-\contentsline {subsection}{\numberline {5.2.1}Google Maps}{14}{subsection.5.2.1}
-\contentsline {section}{\numberline {5.3}Minor Packages}{14}{section.5.3}
-\contentsline {chapter}{\numberline {6}Test Cases}{15}{chapter.6}
-\contentsline {chapter}{\numberline {7}Cost estimation}{16}{chapter.7}
-\contentsline {chapter}{\numberline {8}Conclusions}{17}{chapter.8}
+\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}
+\contentsline {section}{\numberline {1.1}Purpose}{4}{section.1.1}
+\contentsline {subsection}{\numberline {1.1.1}Goals}{4}{subsection.1.1.1}
+\contentsline {section}{\numberline {1.2}Scope}{5}{section.1.2}
+\contentsline {section}{\numberline {1.3}Definitions, Acronyms, Abbreviations}{5}{section.1.3}
+\contentsline {section}{\numberline {1.4}Document Structure}{6}{section.1.4}
+\contentsline {chapter}{\numberline {2}Idea and Requirements}{7}{chapter.2}
+\contentsline {section}{\numberline {2.1}Product perspective}{7}{section.2.1}
+\contentsline {section}{\numberline {2.2}Product functions}{8}{section.2.2}
+\contentsline {section}{\numberline {2.3}User characteristics}{9}{section.2.3}
+\contentsline {section}{\numberline {2.4}Assumptions, dependencies and constraints}{9}{section.2.4}
+\contentsline {section}{\numberline {2.5}Use case diagrams}{10}{section.2.5}
+\contentsline {chapter}{\numberline {3}Architecture}{12}{chapter.3}
+\contentsline {section}{\numberline {3.1}Client-side application}{13}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Code package}{13}{subsection.3.1.1}
+\contentsline {section}{\numberline {3.2}Server-side application}{14}{section.3.2}
+\contentsline {chapter}{\numberline {4}Design}{15}{chapter.4}
+\contentsline {chapter}{\numberline {5}External services and Libraries}{16}{chapter.5}
+\contentsline {section}{\numberline {5.1}Firebase}{16}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Authentication}{16}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Database}{16}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}Storage}{17}{subsection.5.1.3}
+\contentsline {section}{\numberline {5.2}Google Cloud Platform}{17}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Google Maps}{17}{subsection.5.2.1}
+\contentsline {section}{\numberline {5.3}Minor Packages}{17}{section.5.3}
+\contentsline {chapter}{\numberline {6}Test Cases}{18}{chapter.6}
+\contentsline {section}{\numberline {6.1}Login and registration}{19}{section.6.1}
+\contentsline {section}{\numberline {6.2}Stats page}{21}{section.6.2}
+\contentsline {section}{\numberline {6.3}Stations}{22}{section.6.3}
+\contentsline {section}{\numberline {6.4}Profile}{25}{section.6.4}
+\contentsline {chapter}{\numberline {7}Cost estimation}{30}{chapter.7}
+\contentsline {chapter}{\numberline {8}Conclusions}{31}{chapter.8}
