@@ -31,66 +31,47 @@ The profile screen lets the user customize their account on AlGa. They can choos
 \section{Assumptions, dependencies and constraints}
 \subsection*{Domain assumptions}
 \begin{description}
-    \item[{[D1]}] Users can be identified through a couple email/password, unique for every user.
-    \item[{[D2]}] Users’ devices can provide precise and correct data on location.
+    \item[{[D1]}] Users’ devices can provide precise and correct data on location.
+    \item[{[D2]}] All cars are compatible with every recharge station.
+    \item[{[D3]}] Cars' data inserted by users are correct.
 \end{description}
 
-\section{Use case diagrams}%
-\label{sec:use_case_diagrams}
-\begin{figure}[H]
-	\subfloat[]{
-		\begin{tabular}{|l|p{0.6\linewidth}|}
-			\hline
-			Name & Sign up \\
-			\hline
-			Actor & User \\
-			\hline
-			Entry conditions & User has AlGa app installed on their smartphone \\
-			\hline
-			Events flow & \begin{enumerate}
-				\item Click the ``Sign Up'' button
-				\item Fill the form providing the requested information
-				\item Click the ``Confirm button''
-				\item User is now enrolled to AlGa.
-			\end{enumerate}\\
-			\hline
-			Exit conditions & The app shows the main screen to the user.\\
-			\hline
-			Exceptions & \begin{enumerate}
-				\item The e-mail is already taken.
-				\item The format for e-mail or password is wrong.
-				\item All the exceptions are handled by notifiying the user and taking him back to the main screen.
-			\end{enumerate}\\
-			\hline		
-		\end{tabular}
-	}\quad
-\end{figure}
-\begin{figure}[H]
-	\subfloat[]{
-		\begin{tabular}{|l|p{0.6\linewidth}|}
-			\hline
-			Name & Login \\
-			\hline
-			Actor & User \\
-			\hline
-			Exit conditions & The app shows the main screen to the user.\\
-			\hline
-			Events flow & \begin{enumerate}
-				\item The user opens the app
-				\item The user fills the ``E-mail'' and ``Password'' fields
-				\item The user clicks on the ``Login'' button
-			\end{enumerate}\\
-			\hline
-			sxit conditions & The app starts to show the collected data to the user \\
-			\hline
-			Exceptions & \begin{enumerate}
-				\item The e-mail is not associated with a registered user
-				\item The password is not correct for the given e-mail
-				\item All the exceptions are handled by notifiying the user and taking him back to the main screen.
-			\end{enumerate}\\
-			\hline		
-		\end{tabular}
-	}\quad
-\end{figure} 
+\section{Performance Requirements}
+AlGa can support a large amount of users, the only constraint is the plan of Firebase. 
+The application, being designed in Flutter, can have native performances on Android devices. The goal is to support also older smartphones, given that no intensive operations are requested to devices' CPUs.
 
+\section{Design Constraints}
+\subsection{Standards compliance}
+\begin{itemize}
+    \item Permissions
+    
+	The app, in order to guarantee the use of AlGa, will request the following permissions (their name may vary between Android versions):
+	\begin{itemize}
+	    \item Geolocalization
+	    \item Storage (if the user wants to upload a profile pic)
+	\end{itemize}
+    \item Other constraints
+	\begin{itemize}
+	    \item The app can be installed on SD card, if supported by Android version
+	    \item AlGa is designed mainly for portrait use. Landscape mode is not officially supported.
+	\end{itemize}
+\end{itemize}
+
+\subsection{Hardware limitations}
+\begin{itemize}
+    \item A smartphone with Android
+    \item Internet connection
+    \item GPS (optional)
+\end{itemize}
+		
+\section{Software System Attributes}
+\subsection{Reliability}
+The reliability depends on the accuracy of charging stations' positions stored in Firebase. This responsibility is on the admins.
+
+\subsection{Availability}
+The service offered by AlGa has to be available 24/7. The system has to provide a proper way to avoid the possibility of denied service, i.e. to clone servers. This task is shifted on Firebase, which can be considered as a very reliable host.
+
+\subsection{Security}
+All the sensitive informations stored in the AlGa’s databases have to be stored securely in order to avoid any chance, for an external and not authorized user, to read the data. The sensitive information mentioned above are for all users the e-mail and the password. Also, the car and the recharge logs can be considered as a valuable data for an attacker.
+On the servers, the security is guaranteed by Firebase policies, just admins can eventually access some data; passwords, however, are salted so neither admins can access them. 
 

@@ -1,32 +1,43 @@
-\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}
-\contentsline {section}{\numberline {1.1}Purpose}{4}{section.1.1}
-\contentsline {subsection}{\numberline {1.1.1}Goals}{4}{subsection.1.1.1}
-\contentsline {section}{\numberline {1.2}Scope}{5}{section.1.2}
-\contentsline {section}{\numberline {1.3}Definitions, Acronyms, Abbreviations}{5}{section.1.3}
-\contentsline {section}{\numberline {1.4}Document Structure}{6}{section.1.4}
-\contentsline {chapter}{\numberline {2}Idea and Requirements}{7}{chapter.2}
-\contentsline {section}{\numberline {2.1}Product perspective}{7}{section.2.1}
-\contentsline {section}{\numberline {2.2}Product functions}{8}{section.2.2}
-\contentsline {section}{\numberline {2.3}User characteristics}{9}{section.2.3}
-\contentsline {section}{\numberline {2.4}Assumptions, dependencies and constraints}{9}{section.2.4}
-\contentsline {section}{\numberline {2.5}Use case diagrams}{10}{section.2.5}
-\contentsline {chapter}{\numberline {3}Architecture}{12}{chapter.3}
-\contentsline {section}{\numberline {3.1}Client-side application}{13}{section.3.1}
-\contentsline {subsection}{\numberline {3.1.1}Code package}{13}{subsection.3.1.1}
-\contentsline {section}{\numberline {3.2}Server-side application}{14}{section.3.2}
-\contentsline {chapter}{\numberline {4}Design}{15}{chapter.4}
-\contentsline {chapter}{\numberline {5}External services and Libraries}{16}{chapter.5}
-\contentsline {section}{\numberline {5.1}Firebase}{16}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Authentication}{16}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Database}{16}{subsection.5.1.2}
-\contentsline {subsection}{\numberline {5.1.3}Storage}{17}{subsection.5.1.3}
-\contentsline {section}{\numberline {5.2}Google Cloud Platform}{17}{section.5.2}
-\contentsline {subsection}{\numberline {5.2.1}Google Maps}{17}{subsection.5.2.1}
-\contentsline {section}{\numberline {5.3}Minor Packages}{17}{section.5.3}
-\contentsline {chapter}{\numberline {6}Test Cases}{18}{chapter.6}
-\contentsline {section}{\numberline {6.1}Login and registration}{19}{section.6.1}
-\contentsline {section}{\numberline {6.2}Stats page}{21}{section.6.2}
-\contentsline {section}{\numberline {6.3}Stations}{22}{section.6.3}
-\contentsline {section}{\numberline {6.4}Profile}{25}{section.6.4}
-\contentsline {chapter}{\numberline {7}Cost estimation}{30}{chapter.7}
-\contentsline {chapter}{\numberline {8}Conclusions}{31}{chapter.8}
+\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Purpose}{4}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Goals}{4}{subsection.1.1.1}%
+\contentsline {section}{\numberline {1.2}Scope}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Document Structure}{5}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Idea and Requirements}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Product perspective}{6}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Product functions}{7}{section.2.2}%
+\contentsline {section}{\numberline {2.3}User characteristics}{8}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Assumptions, dependencies and constraints}{8}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Performance Requirements}{8}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Design Constraints}{8}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Standards compliance}{8}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Hardware limitations}{9}{subsection.2.6.2}%
+\contentsline {section}{\numberline {2.7}Software System Attributes}{9}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Reliability}{9}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}Availability}{9}{subsection.2.7.2}%
+\contentsline {subsection}{\numberline {2.7.3}Security}{9}{subsection.2.7.3}%
+\contentsline {chapter}{\numberline {3}Architecture}{10}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Client-side application}{11}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Code package}{11}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}Server-side application}{12}{section.3.2}%
+\contentsline {chapter}{\numberline {4}Design}{13}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Icon}{13}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Navigation}{15}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Stats}{15}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Stations}{16}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Profile}{19}{section.4.5}%
+\contentsline {chapter}{\numberline {5}External services and Libraries}{20}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Firebase}{20}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Authentication}{20}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Database}{20}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Storage}{21}{subsection.5.1.3}%
+\contentsline {section}{\numberline {5.2}Google Cloud Platform}{21}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Google Maps}{21}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.3}Minor Packages}{21}{section.5.3}%
+\contentsline {chapter}{\numberline {6}Test Cases}{22}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Login and registration}{23}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Stats page}{25}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Stations}{26}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Profile}{29}{section.6.4}%
+\contentsline {chapter}{\numberline {7}Cost estimation}{34}{chapter.7}%
+\contentsline {chapter}{\numberline {8}Conclusions}{35}{chapter.8}%
