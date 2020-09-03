@@ -25,11 +25,17 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: FutureBuilder(
-          // check if an user is already logged in
+          // Check two things.
+          // The first is the notification part: it's necessary to put it here
+          // in order to catch the times in which the app is launched
+          // clicking a notification.
+          // The second is for the cases on normal launches: we check if the
+          // user is already logged in or not.
+
           future: _auth.currentUser(),
-          // wait for the future to resolve and render the appropriate
-          // widget for HomePage or LoginPage
           builder: (context, AsyncSnapshot snapshot) {
+
+            // Initialize notifcation settings
             var initializationSettingsAndroid =
                 AndroidInitializationSettings('app_icon');
             var initializationSettingsIOS = IOSInitializationSettings();
@@ -41,12 +47,18 @@ class MyApp extends StatelessWidget {
                 debugPrint('notification payload: ' + payload);
               }
 
-              if (payload == "station_reached")
+              // If a station is reached, a "station reached" notification
+              // is sent. Clicking it, we start the recharge manager.
+              if (payload == "station_reached") {
                 debugPrint("pushing recharge manager...");
                 Navigator.of(context).push(
                     MaterialPageRoute<void>(builder: (_) => RechargeManager()));
+              }
             });
 
+            // This is used in the case of a normal launch.
+            // If the user is authenticated, launch the HomePage.
+            // Otherwise, launch the SignIn Page.
             if (snapshot.connectionState == ConnectionState.done) {
               return snapshot.hasData ? HomePage() : SignInPage();
             } else {
