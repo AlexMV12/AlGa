@@ -6,6 +6,8 @@ AlGa is an Android application, developed in Flutter, which allows users to find
 
 __All the stations are fake! They were created for test.__
 
+The application is a mock-up; data is hosted on Firebase. 
+
 ## Screenshots
 
 ![Profile](../master/doc/Pics/MockUps/Profile.png)
