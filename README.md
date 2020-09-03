@@ -1,16 +1,26 @@
-# flutter_app
+# AlGa
 
-A new Flutter application.
+_This application has been developed during the course Design and Implementation of Mobile Applications at the Politecnico di Milano._
 
-## Getting Started
+AlGa is an Android application, developed in Flutter, which allows users to find electric cars charging stations and to manage the costs of their electric car.
 
-This project is a starting point for a Flutter application.
+__All the stations are fake! They were created for test.__
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshots
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+![Profile](../master/doc/Pics/MockUps/Profile.png)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Stations](../master/doc/Pics/MockUps/Stations.png)
+
+![Stats](../master/doc/Pics/MockUps/Stats.png)
+
+## Code
+
+The code is in full Flutter (dart) with the use of some packages (in particular for Firebase). 
+
+## Documentation
+
+In the "doc" folder you can find:
+  - A design document, with many information on the application (DD.pdf)
+  - A simple elevator pitch (AlGa_video.mp4)
+  - Presentation slides (AlGa_DIMA.pptx)
