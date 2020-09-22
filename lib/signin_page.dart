@@ -229,6 +229,7 @@ class SignInPageState extends State<SignInPage> {
         "Content-Type": "application/json",
         "Accept": "application/json"
       },
+      // Keys are revoked, for safety
       body: jsonEncode(GitHubLoginRequest(
         clientId: "176ca01c449f94cdf298",
         clientSecret: "a51d4e5d075ebd68cbaef1776992525edf54cfa0",
